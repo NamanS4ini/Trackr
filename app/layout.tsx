@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next"
 import { HabitProvider } from "@/components/habit-provider";
 
 const geistSans = Geist({
@@ -17,6 +18,9 @@ export const metadata: Metadata = {
   title: "Trackr - Build Better Habits",
   description: "Priority-based habit tracker with visual analytics and smart insights. Transform your daily routine into consistent progress.",
   keywords: ["habit tracker", "productivity", "goal tracking", "habits", "daily tracker"],
+  verification: {
+    google: "LlcGh97wfD8VMKTmwdRoP9AddnOlThOhU2s6vTR1xZk",
+  },
 };
 
 export default function RootLayout({
@@ -29,6 +33,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
+        <Analytics />
         <HabitProvider>{children}</HabitProvider>
       </body>
     </html>
