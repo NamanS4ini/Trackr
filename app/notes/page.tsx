@@ -9,15 +9,44 @@ import AppLayout from '@/components/app-layout';
 import { storage } from '@/lib/storage';
 import { DayNote } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
-import { Calendar, FileText, ChevronRight } from 'lucide-react';
+import { Calendar, FileText, ChevronRight, StickyNote } from 'lucide-react';
+
+interface DateWithNotes {
+  date: string;
+  dayNote?: DayNote;
+  hasHabitNotes: boolean;
+}
 
 export default function NotesPage() {
-  const [dayNotes, setDayNotes] = useState<DayNote[]>([]);
+  const [datesWithNotes, setDatesWithNotes] = useState<DateWithNotes[]>([]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    setDayNotes(storage.getDayNotes().sort((a, b) => b.date.localeCompare(a.date)));
+    
+    // Get all dates with daily notes
+    const dayNotes = storage.getDayNotes();
+    const dayNotesMap = new Map(dayNotes.map(note => [note.date, note]));
+    
+    // Get all dates with habit notes
+    const entries = storage.getEntries();
+    const datesWithHabitNotes = new Set(
+      entries.filter(entry => entry.note && entry.note.trim()).map(entry => entry.date)
+    );
+    
+    // Combine all unique dates
+    const allDates = new Set([...dayNotesMap.keys(), ...datesWithHabitNotes]);
+    
+    const combined: DateWithNotes[] = Array.from(allDates).map(date => ({
+      date,
+      dayNote: dayNotesMap.get(date),
+      hasHabitNotes: datesWithHabitNotes.has(date)
+    }));
+    
+    // Sort by date descending
+    combined.sort((a, b) => b.date.localeCompare(a.date));
+    
+    setDatesWithNotes(combined);
   }, []);
 
   if (!mounted) {
@@ -37,34 +66,34 @@ export default function NotesPage() {
           <FileText className="h-6 w-6 text-blue-400" />
           <h1 className="text-2xl font-bold">Daily Notes</h1>
           <Badge variant="outline" className="ml-2">
-            {dayNotes.length} {dayNotes.length === 1 ? 'note' : 'notes'}
+            {datesWithNotes.length} {datesWithNotes.length === 1 ? 'date' : 'dates'}
           </Badge>
         </div>
 
-        {dayNotes.length === 0 ? (
+        {datesWithNotes.length === 0 ? (
           <Card className="border-zinc-800">
             <CardContent className="p-12 text-center text-muted-foreground">
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg mb-2">No notes yet</p>
               <p className="text-sm">
-                Add daily notes from the Track page to see them here
+                Add daily notes or habit notes from the Track page to see them here
               </p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-3">
-            {dayNotes.map((note, index) => {
-              const date = parseISO(note.date);
-              const isToday = note.date === format(new Date(), 'yyyy-MM-dd');
+            {datesWithNotes.map((item, index) => {
+              const date = parseISO(item.date);
+              const isToday = item.date === format(new Date(), 'yyyy-MM-dd');
               
               return (
                 <motion.div
-                  key={note.date}
+                  key={item.date}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                 >
-                  <Link href={`/notes/${note.date}`}>
+                  <Link href={`/notes/${item.date}`}>
                     <Card className="border-zinc-800 hover:bg-zinc-900/50 transition-all cursor-pointer group">
                       <CardContent className="p-4">
                         <div className="flex items-start gap-4">
@@ -93,10 +122,19 @@ export default function NotesPage() {
                                   Today
                                 </Badge>
                               )}
+                              {item.hasHabitNotes && (
+                                <StickyNote className="h-4 w-4 text-purple-400" />
+                              )}
                             </div>
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                              {note.note}
-                            </p>
+                            {item.dayNote ? (
+                              <p className="text-sm text-muted-foreground line-clamp-2">
+                                {item.dayNote.note}
+                              </p>
+                            ) : (
+                              <p className="text-sm text-muted-foreground italic">
+                                Habit notes only
+                              </p>
+                            )}
                           </div>
 
                           <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
