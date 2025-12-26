@@ -31,6 +31,7 @@ interface DraggableHabitsListProps {
   onUpdate: (id: string, updates: Partial<Habit>) => void;
   onDelete: (id: string) => void;
   onReorder: (habitIds: string[]) => void;
+  showArchiveToggle?: boolean;
 }
 
 const PRIORITY_LABELS: Record<string, string> = {
@@ -45,9 +46,10 @@ interface SortableHabitProps {
   stats: HabitStats;
   onUpdate: (id: string, updates: Partial<Habit>) => void;
   onDelete: (id: string) => void;
+  showArchiveToggle?: boolean;
 }
 
-function SortableHabit({ habit, stats, onUpdate, onDelete }: SortableHabitProps) {
+function SortableHabit({ habit, stats, onUpdate, onDelete, showArchiveToggle = true }: SortableHabitProps) {
   const [showEdit, setShowEdit] = useState(false);
   const {
     attributes,
@@ -136,18 +138,20 @@ function SortableHabit({ habit, stats, onUpdate, onDelete }: SortableHabitProps)
               >
                 <Pencil className="h-3.5 w-3.5" />
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleArchive}
-                className="h-7 w-7 p-0"
-              >
-                {habit.archived ? (
-                  <ArchiveRestore className="h-3.5 w-3.5" />
-                ) : (
-                  <Archive className="h-3.5 w-3.5" />
-                )}
-              </Button>
+              {showArchiveToggle && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleArchive}
+                  className="h-7 w-7 p-0"
+                >
+                  {habit.archived ? (
+                    <ArchiveRestore className="h-3.5 w-3.5" />
+                  ) : (
+                    <Archive className="h-3.5 w-3.5" />
+                  )}
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -183,6 +187,7 @@ export function DraggableHabitsList({
   onUpdate,
   onDelete,
   onReorder,
+  showArchiveToggle = true,
 }: DraggableHabitsListProps) {
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -223,6 +228,7 @@ export function DraggableHabitsList({
               stats={stats[habit.id]}
               onUpdate={onUpdate}
               onDelete={onDelete}
+              showArchiveToggle={showArchiveToggle}
             />
           ))}
         </div>

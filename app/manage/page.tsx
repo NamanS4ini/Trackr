@@ -1,6 +1,6 @@
 'use client';
 
-import { DraggableHabitsList } from '@/components/draggable-habits-list';
+import { HabitsManager } from '@/components/habits-manager';
 import { DataManagement } from '@/components/data-management';
 import { StartPageSettings } from '@/components/start-page-settings';
 import { ChartFormatSettings } from '@/components/chart-format-settings';
@@ -26,25 +26,23 @@ export default function ManagePage() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div className="grid gap-4">
-          {habits.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <p className="text-lg mb-4">No habits yet</p>
-              <AddHabitDialog onAdd={addHabit} />
-            </div>
-          ) : (
-            <DraggableHabitsList
-              habits={habits}
-              stats={habits.reduce((acc, habit) => {
-                acc[habit.id] = calculateHabitStats(habit, entries);
-                return acc;
-              }, {} as Record<string, any>)}
-              onUpdate={updateHabit}
-              onDelete={deleteHabit}
-              onReorder={reorderHabits}
-            />
-          )}
-        </div>
+        {habits.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            <p className="text-lg mb-4">No habits yet</p>
+            <AddHabitDialog onAdd={addHabit} />
+          </div>
+        ) : (
+          <HabitsManager
+            habits={habits}
+            stats={habits.reduce((acc, habit) => {
+              acc[habit.id] = calculateHabitStats(habit, entries);
+              return acc;
+            }, {} as Record<string, any>)}
+            onUpdate={updateHabit}
+            onDelete={deleteHabit}
+            onReorder={reorderHabits}
+          />
+        )}
         <StartPageSettings />
         <ChartFormatSettings />
         <DataManagement />

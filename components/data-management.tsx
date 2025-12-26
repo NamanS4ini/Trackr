@@ -3,12 +3,11 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Download, Upload, Archive } from 'lucide-react';
+import { Download, Upload } from 'lucide-react';
 import { storage } from '@/lib/storage';
 
 export function DataManagement() {
   const [importing, setImporting] = useState(false);
-  const [archiving, setArchiving] = useState(false);
 
   const handleExport = () => {
     const data = storage.exportData();
@@ -54,21 +53,6 @@ export function DataManagement() {
     input.click();
   };
 
-  const handleArchiveYear = () => {
-    if (confirm('This will archive the current year\'s data. Continue?')) {
-      try {
-        setArchiving(true);
-        storage.archiveCurrentYear();
-        alert('Year archived successfully! Data is saved and can be viewed in the heatmap.');
-      } catch (error) {
-        alert('Error archiving year data.');
-        console.error(error);
-      } finally {
-        setArchiving(false);
-      }
-    }
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -86,14 +70,8 @@ export function DataManagement() {
               {importing ? 'Importing...' : 'Import Data'}
             </Button>
           </div>
-          <div>
-            <Button onClick={handleArchiveYear} variant="outline" className="gap-2" disabled={archiving}>
-              <Archive className="h-4 w-4" />
-              {archiving ? 'Archiving...' : 'Archive Current Year'}
-            </Button>
-          </div>
           <p className="text-xs text-muted-foreground">
-            Export your data as JSON for backup or import previously exported data. Archive feature saves the current year and allows you to view it in the heatmap.
+            Export your data as JSON for backup or import previously exported data. Years are automatically archived on January 1st and can be viewed in the heatmap dropdown.
           </p>
         </div>
       </CardContent>
