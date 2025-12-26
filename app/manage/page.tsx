@@ -45,7 +45,15 @@ export default function ManagePage() {
         )}
         <StartPageSettings />
         <ChartFormatSettings />
-        <DataManagement />
+        <DataManagement 
+          habits={habits}
+          stats={habits.reduce((acc, habit) => {
+            acc[habit.id] = calculateHabitStats(habit, entries);
+            return acc;
+          }, {} as Record<string, any>)}
+          onUpdate={updateHabit}
+          onDelete={deleteHabit}
+        />
         
         <div className="flex items-center justify-center gap-1 py-4 text-sm text-muted-foreground">
           <span>Made with</span>

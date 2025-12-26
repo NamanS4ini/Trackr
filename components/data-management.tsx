@@ -5,8 +5,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, Upload } from 'lucide-react';
 import { storage } from '@/lib/storage';
+import { ArchivedHabitsDialog } from './archived-habits-dialog';
+import { Habit, HabitStats } from '@/lib/types';
 
-export function DataManagement() {
+interface DataManagementProps {
+  habits?: Habit[];
+  stats?: Record<string, HabitStats>;
+  onUpdate?: (id: string, updates: Partial<Habit>) => void;
+  onDelete?: (id: string) => void;
+}
+
+export function DataManagement({ habits = [], stats = {}, onUpdate = () => {}, onDelete = () => {} }: DataManagementProps) {
   const [importing, setImporting] = useState(false);
 
   const handleExport = () => {
@@ -69,6 +78,14 @@ export function DataManagement() {
               <Upload className="h-4 w-4" />
               {importing ? 'Importing...' : 'Import Data'}
             </Button>
+          </div>
+          <div>
+            <ArchivedHabitsDialog 
+              habits={habits}
+              stats={stats}
+              onUpdate={onUpdate}
+              onDelete={onDelete}
+            />
           </div>
           <p className="text-xs text-muted-foreground">
             Export your data as JSON for backup or import previously exported data. Years are automatically archived on January 1st and can be viewed in the heatmap dropdown.
