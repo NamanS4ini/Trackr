@@ -47,3 +47,5 @@ export interface YearData {
   entries: HabitEntry[];
   archivedAt: string;
 }
+
+export type ChartFormat = 'daily' | 'weekly' | 'monthly';

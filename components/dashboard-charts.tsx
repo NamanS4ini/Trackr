@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Habit, HabitEntry } from '@/lib/types';
+import { Habit, HabitEntry, ChartFormat } from '@/lib/types';
 import { getWeeklyScores, getDailyScores, getMonthlyScores } from '@/lib/utils-habit';
 
 interface DashboardChartsProps {
@@ -18,10 +18,15 @@ interface DashboardChartsProps {
   entries: HabitEntry[];
 }
 
-type TimeRange = 'daily' | 'weekly' | 'monthly';
-
 export function DashboardCharts({ habits, entries }: DashboardChartsProps) {
-  const [timeRange, setTimeRange] = useState<TimeRange>('weekly');
+  const [timeRange, setTimeRange] = useState<ChartFormat>('weekly');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('trackr-chart-format');
+    if (saved === 'daily' || saved === 'weekly' || saved === 'monthly') {
+      setTimeRange(saved);
+    }
+  }, []);
 
   const getChartData = () => {
     switch (timeRange) {
@@ -43,7 +48,7 @@ export function DashboardCharts({ habits, entries }: DashboardChartsProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Progress Charts</h3>
-        <Select value={timeRange} onValueChange={(v) => setTimeRange(v as TimeRange)}>
+        <Select value={timeRange} onValueChange={(v) => setTimeRange(v as ChartFormat)}>
           <SelectTrigger className="w-32">
             <SelectValue />
           </SelectTrigger>

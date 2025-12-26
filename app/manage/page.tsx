@@ -3,6 +3,7 @@
 import { DraggableHabitsList } from '@/components/draggable-habits-list';
 import { DataManagement } from '@/components/data-management';
 import { StartPageSettings } from '@/components/start-page-settings';
+import { ChartFormatSettings } from '@/components/chart-format-settings';
 import { AddHabitDialog } from '@/components/add-habit-dialog';
 import { useHabits } from '@/components/habit-provider';
 import { calculateHabitStats } from '@/lib/utils-habit';
@@ -45,6 +46,7 @@ export default function ManagePage() {
           )}
         </div>
         <StartPageSettings />
+        <ChartFormatSettings />
         <DataManagement />
         
         <div className="flex items-center justify-center gap-1 py-4 text-sm text-muted-foreground">
