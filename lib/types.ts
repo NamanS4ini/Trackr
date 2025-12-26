@@ -19,6 +19,12 @@ export interface HabitEntry {
   note?: string;
 }
 
+export interface DayNote {
+  date: string; // ISO date string (YYYY-MM-DD)
+  note: string;
+  createdAt: string;
+}
+
 export interface HabitStats {
   habitId: string;
   currentStreak: number;

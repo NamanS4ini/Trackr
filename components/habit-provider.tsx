@@ -12,6 +12,7 @@ interface HabitContextType {
   updateHabit: (id: string, updates: Partial<Habit>) => void;
   deleteHabit: (id: string) => void;
   toggleEntry: (habitId: string, date: string, note?: string) => void;
+  updateEntryNote: (habitId: string, date: string, note: string) => void;
   reorderHabits: (habitIds: string[]) => void;
   refreshData: () => void;
 }
@@ -54,6 +55,11 @@ export function HabitProvider({ children }: { children: ReactNode }) {
     loadData();
   };
 
+  const updateEntryNote = (habitId: string, date: string, note: string) => {
+    storage.updateEntryNote(habitId, date, note);
+    loadData();
+  };
+
   const reorderHabits = (habitIds: string[]) => {
     storage.reorderHabits(habitIds);
     loadData();
@@ -73,6 +79,7 @@ export function HabitProvider({ children }: { children: ReactNode }) {
         updateHabit,
         deleteHabit,
         toggleEntry,
+        updateEntryNote,
         reorderHabits,
         refreshData,
       }}

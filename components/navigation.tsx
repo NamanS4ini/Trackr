@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ListChecks, LayoutDashboard, Settings, Flame, Zap } from 'lucide-react';
+import { ListChecks, LayoutDashboard, Settings, Flame, Zap, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHabits } from '@/components/habit-provider';
 import { subDays } from 'date-fns';
@@ -15,6 +15,7 @@ export function Navigation() {
   const links = [
     { href: '/track', label: 'Track', icon: ListChecks },
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/notes', label: 'Notes', icon: FileText },
     { href: '/manage', label: 'Manage', icon: Settings },
   ];
 
@@ -71,7 +72,7 @@ export function Navigation() {
       <div className="flex items-center justify-between">
         <div className="flex gap-6">
           {links.map(({ href, label, icon: Icon }) => {
-            const isActive = pathname === href;
+            const isActive = pathname === href || pathname?.startsWith(href + '/');
             return (
               <Link
                 key={href}

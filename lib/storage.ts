@@ -1,7 +1,8 @@
-import { Habit, HabitEntry } from './types';
+import { Habit, HabitEntry, DayNote } from './types';
 
 const HABITS_KEY = 'habit-tracker-habits';
 const ENTRIES_KEY = 'habit-tracker-entries';
+const DAY_NOTES_KEY = 'habit-tracker-day-notes';
 
 export const storage = {
   // Habits
@@ -208,5 +209,41 @@ export const storage = {
     }
     
     return false;
+  },
+
+  // Day Notes
+  getDayNotes: (): DayNote[] => {
+    if (typeof window === 'undefined') return [];
+    const data = localStorage.getItem(DAY_NOTES_KEY);
+    return data ? JSON.parse(data) : [];
+  },
+
+  saveDayNotes: (notes: DayNote[]): void => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(DAY_NOTES_KEY, JSON.stringify(notes));
+  },
+
+  getDayNote: (date: string): DayNote | undefined => {
+    const notes = storage.getDayNotes();
+    return notes.find(n => n.date === date);
+  },
+
+  saveDayNote: (date: string, note: string): void => {
+    const notes = storage.getDayNotes();
+    const existingIndex = notes.findIndex(n => n.date === date);
+    
+    if (existingIndex !== -1) {
+      notes[existingIndex] = { date, note, createdAt: notes[existingIndex].createdAt };
+    } else {
+      notes.push({ date, note, createdAt: new Date().toISOString() });
+    }
+    
+    storage.saveDayNotes(notes);
+  },
+
+  deleteDayNote: (date: string): void => {
+    const notes = storage.getDayNotes();
+    const filtered = notes.filter(n => n.date !== date);
+    storage.saveDayNotes(filtered);
   },
 };

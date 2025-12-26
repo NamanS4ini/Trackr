@@ -25,12 +25,19 @@ Daily scores are calculated based on completed habits and their priority levels.
 - **Activity Heatmap**: 12-week visualization of daily activity intensity
 - **Habit Stats**: Track current streak, longest streak, total completions, and completion rate for each habit
 
+### Notes System
+- **Daily Notes**: Add a note for each day to capture thoughts, reflections, or important events
+- **Habit Notes**: Add specific notes to individual habit completions
+- **Notes Page**: View all daily notes organized by date
+- **Detailed View**: Click on any date to see daily note + all habit-specific notes for that day
+- **Read-Only Protection**: Past day notes are automatically locked to prevent accidental edits
+
 ### Additional Features
-- **Notes**: Add notes to daily habit completions
 - **Color Coding**: Customize each habit with a color
 - **Archive System**: Archive habits without losing historical data
 - **Data Export/Import**: Backup and restore your data as JSON
 - **Responsive Design**: Works seamlessly on desktop and mobile
+- **Automatic Year Archiving**: Habits are automatically archived at year-end for heatmap display
 
 ## Technology Stack
 
@@ -75,10 +82,12 @@ npm start
 5. Click "Add Habit"
 
 ### Daily Tracking
-1. Go to "Today" tab
-2. Click the checkbox next to each habit to mark as complete
-3. Optionally add notes for context
-4. Your daily score updates automatically
+1. Go to "Track" tab
+2. Add a daily note to capture your day's highlights (optional)
+3. Click the checkbox next to each habit to mark as complete
+4. Click the note icon on any habit to add habit-specific notes
+5. Click "Save Note" to save habit notes without toggling completion
+6. Your daily score updates automatically
 
 ### Viewing Analytics
 1. Navigate to "Dashboard" tab
@@ -90,7 +99,16 @@ npm start
 1. Go to "Manage" tab
 2. View all habits with their statistics
 3. Edit, archive, or delete habits as needed
-4. Export your data for backup
+4. Switch between active and archived habits
+5. View archived habits through Data Management dialog
+6. Export your data for backup
+
+### Using Notes
+1. Navigate to "Notes" tab to view all daily notes
+2. Each note shows the date and a preview of the content
+3. Click on any date card to view detailed notes for that day
+4. In detailed view, see your daily note plus all habit-specific notes
+5. Notes from past days are read-only to prevent accidental changes
 
 ## License
 
