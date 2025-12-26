@@ -12,7 +12,7 @@ interface HabitsManagerProps {
   stats: Record<string, HabitStats>;
   onUpdate: (id: string, updates: Partial<Habit>) => void;
   onDelete: (id: string) => void;
-  onReorder: (habits: Habit[]) => void;
+  onReorder: (habitIds: string[]) => void;
 }
 
 export function HabitsManager({ habits, stats, onUpdate, onDelete, onReorder }: HabitsManagerProps) {
