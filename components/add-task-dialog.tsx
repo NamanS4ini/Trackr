@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -38,6 +39,7 @@ export function AddTaskDialog({ date, habits, existingTasks, onAddTask, children
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [habitId, setHabitId] = useState<string>('none');
+  const [recurring, setRecurring] = useState(false);
   const [priority, setPriority] = useState<Priority>('medium');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -59,6 +61,7 @@ export function AddTaskDialog({ date, habits, existingTasks, onAddTask, children
       completed: false,
       createdAt: new Date().toISOString(),
       order: maxOrder + 1,
+      recurring,
     };
 
     onAddTask(newTask);
@@ -68,6 +71,7 @@ export function AddTaskDialog({ date, habits, existingTasks, onAddTask, children
     setDescription('');
     setHabitId('none');
     setPriority('medium');
+    setRecurring(false);
     setOpen(false);
   };
 
@@ -138,6 +142,22 @@ export function AddTaskDialog({ date, habits, existingTasks, onAddTask, children
               <p className="text-xs text-muted-foreground">
                 Linked tasks count towards habit completion
               </p>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="recurring"
+                checked={recurring}
+                onCheckedChange={(checked) => setRecurring(checked as boolean)}
+              />
+              <div className="grid gap-0.5">
+                <Label htmlFor="recurring" className="cursor-pointer">
+                  Recurring Task
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Automatically add this task to the next day when completed
+                </p>
+              </div>
             </div>
 
             <div className="grid gap-2">

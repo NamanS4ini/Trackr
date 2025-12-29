@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Trash2, GripVertical } from 'lucide-react';
+import { Trash2, GripVertical, Repeat } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TaskListProps {
@@ -157,6 +157,12 @@ function TaskItem({ task, onToggle, onDelete, readOnly }: TaskItemProps) {
                 task.completed && "line-through text-muted-foreground"
               )}>
                 {task.title}
+                {task.recurring && (
+                  <Badge variant="outline" className="ml-2 text-xs h-4 px-1">
+                    <Repeat className="w-3 h-3 mr-1" />
+                    Daily
+                  </Badge>
+                )}
               </p>
               {task.description && (
                 <p className="text-sm text-muted-foreground mt-1">

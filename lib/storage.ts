@@ -275,6 +275,47 @@ export const storage = {
 
   getPlannedTasksForDate: (date: string): PlannedTask[] => {
     const tasks = storage.getPlannedTasks();
+    
+    // Check if we need to copy recurring tasks from previous day
+    const prevDate = new Date(date);
+    prevDate.setDate(prevDate.getDate() - 1);
+    const prevDateStr = prevDate.toISOString().split('T')[0];
+    
+    const prevDayTasks = tasks.filter(t => t.date === prevDateStr && t.recurring);
+    const currentDayTasks = tasks.filter(t => t.date === date);
+    let needsSave = false;
+    
+    // Copy recurring tasks from previous day if they don't exist
+    prevDayTasks.forEach(prevTask => {
+      const existsForCurrentDay = currentDayTasks.some(
+        t => t.title === prevTask.title && t.habitId === prevTask.habitId && t.recurring
+      );
+      
+      if (!existsForCurrentDay) {
+        const maxOrder = currentDayTasks.length > 0 
+          ? Math.max(...currentDayTasks.map(t => t.order)) 
+          : -1;
+        
+        const newTask: PlannedTask = {
+          ...prevTask,
+          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          date: date,
+          completed: false,
+          completedAt: undefined,
+          createdAt: new Date().toISOString(),
+          order: maxOrder + 1,
+        };
+        
+        tasks.push(newTask);
+        currentDayTasks.push(newTask);
+        needsSave = true;
+      }
+    });
+    
+    if (needsSave) {
+      storage.savePlannedTasks(tasks);
+    }
+    
     return tasks.filter((t) => t.date === date).sort((a, b) => a.order - b.order);
   },
 

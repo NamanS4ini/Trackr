@@ -32,6 +32,7 @@ export interface PlannedTask {
   completedAt?: string;
   createdAt: string;
   order: number;
+  recurring?: boolean; // If true, task will be copied to next day when completed
 }
 
 export interface DayNote {

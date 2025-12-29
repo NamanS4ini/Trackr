@@ -57,11 +57,11 @@ export function PlannerView({
 
   const dateObj = parseISO(selectedDate);
   const isDateInPast = isPast(dateObj) && formatDate(dateObj) !== formatDate(new Date());
-  const isDateInFuture = isFuture(dateObj) || formatDate(dateObj) === formatDate(new Date());
+  const isToday = formatDate(dateObj) === formatDate(new Date());
+  const isDateInFuture = !isToday && (isFuture(dateObj) || formatDate(dateObj) > formatDate(new Date()));
+  const isTomorrow = formatDate(dateObj) === formatDate(addDays(new Date(), 1));
 
   const dateFormatted = format(dateObj, 'EEEE, MMMM d, yyyy');
-  const isToday = formatDate(dateObj) === formatDate(new Date());
-  const isTomorrow = formatDate(dateObj) === formatDate(addDays(new Date(), 1));
 
   // Calculate statistics
   const totalTasks = tasks.length;
@@ -102,7 +102,7 @@ export function PlannerView({
                 {isToday && 'Today'}
                 {isTomorrow && 'Tomorrow'}
                 {!isToday && !isTomorrow && isDateInPast && 'Past Date (Read Only)'}
-                {!isToday && !isTomorrow && isDateInFuture && 'Future Date'}
+                {!isToday && !isTomorrow && isDateInFuture && 'Future Date (Planning Only)'}
               </p>
             </div>
             <Button variant="outline" size="icon" onClick={handleNextDay}>
@@ -162,7 +162,7 @@ export function PlannerView({
           onToggleTask={onToggleTask}
           onDeleteTask={onDeleteTask}
           groupByHabit={true}
-          readOnly={isDateInPast}
+          readOnly={!isToday}
         />
       </Card>
 
