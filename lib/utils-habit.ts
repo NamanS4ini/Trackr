@@ -1,5 +1,5 @@
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, subDays, parseISO } from 'date-fns';
-import { Habit, HabitEntry, HabitStats, PRIORITY_VALUES } from './types';
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, subDays, parseISO, addDays } from 'date-fns';
+import { Habit, HabitEntry, HabitStats, PRIORITY_VALUES, PlannedTask } from './types';
 
 export function formatDate(date: Date): string {
   return format(date, 'yyyy-MM-dd');
@@ -88,11 +88,24 @@ export function calculateDailyScore(habits: Habit[], entries: HabitEntry[], date
   dateEntries.forEach((entry) => {
     const habit = habits.find((h) => h.id === entry.habitId);
     if (habit) {
-      score += PRIORITY_VALUES[habit.priority];
+      const completionPercentage = entry.completionPercentage ?? 100;
+      score += (PRIORITY_VALUES[habit.priority] * completionPercentage) / 100;
     }
   });
 
-  return score;
+  return Math.round(score * 10) / 10; // Round to 1 decimal place
+}
+
+export function calculateHabitCompletionPercentage(habitId: string, date: string, tasks: PlannedTask[]): number {
+  const habitTasks = tasks.filter(t => t.habitId === habitId && t.date === date);
+  if (habitTasks.length === 0) return 100;
+  
+  const completedTasks = habitTasks.filter(t => t.completed).length;
+  return Math.round((completedTasks / habitTasks.length) * 100);
+}
+
+export function getTomorrow(): string {
+  return formatDate(addDays(new Date(), 1));
 }
 
 export function getHeatmapData(habits: Habit[], entries: HabitEntry[], days: number = 90) {

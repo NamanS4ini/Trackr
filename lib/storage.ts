@@ -1,8 +1,9 @@
-import { Habit, HabitEntry, DayNote } from './types';
+import { Habit, HabitEntry, DayNote, PlannedTask } from './types';
 
 const HABITS_KEY = 'habit-tracker-habits';
 const ENTRIES_KEY = 'habit-tracker-entries';
 const DAY_NOTES_KEY = 'habit-tracker-day-notes';
+const PLANNED_TASKS_KEY = 'habit-tracker-planned-tasks';
 
 export const storage = {
   // Habits
@@ -90,6 +91,13 @@ export const storage = {
       (e) => e.habitId === habitId && e.date === date
     );
 
+    // Get tasks for this habit and date to calculate completion percentage
+    const habitTasks = storage.getPlannedTasksForDate(date).filter(t => t.habitId === habitId);
+    const hasTasks = habitTasks.length > 0;
+    const completionPercentage = hasTasks 
+      ? (habitTasks.filter(t => t.completed).length / habitTasks.length) * 100 
+      : 100;
+
     if (existingIndex !== -1) {
       // Toggle completion
       const wasCompleted = entries[existingIndex].completed;
@@ -105,6 +113,10 @@ export const storage = {
       if (note !== undefined) {
         entries[existingIndex].note = note;
       }
+
+      // Update completion percentage and tasks array
+      entries[existingIndex].completionPercentage = completionPercentage;
+      entries[existingIndex].tasks = habitTasks.map(t => t.id);
     } else {
       // Create new entry
       entries.push({
@@ -113,6 +125,8 @@ export const storage = {
         completed: true,
         completedAt: new Date().toISOString(),
         note,
+        completionPercentage,
+        tasks: habitTasks.map(t => t.id),
       });
     }
 
@@ -245,5 +259,134 @@ export const storage = {
     const notes = storage.getDayNotes();
     const filtered = notes.filter(n => n.date !== date);
     storage.saveDayNotes(filtered);
+  },
+
+  // Planned Tasks
+  getPlannedTasks: (): PlannedTask[] => {
+    if (typeof window === 'undefined') return [];
+    const data = localStorage.getItem(PLANNED_TASKS_KEY);
+    return data ? JSON.parse(data) : [];
+  },
+
+  savePlannedTasks: (tasks: PlannedTask[]): void => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(PLANNED_TASKS_KEY, JSON.stringify(tasks));
+  },
+
+  getPlannedTasksForDate: (date: string): PlannedTask[] => {
+    const tasks = storage.getPlannedTasks();
+    return tasks.filter((t) => t.date === date).sort((a, b) => a.order - b.order);
+  },
+
+  getPlannedTasksForHabit: (habitId: string, date: string): PlannedTask[] => {
+    const tasks = storage.getPlannedTasks();
+    return tasks.filter((t) => t.habitId === habitId && t.date === date).sort((a, b) => a.order - b.order);
+  },
+
+  addPlannedTask: (task: PlannedTask): void => {
+    const tasks = storage.getPlannedTasks();
+    tasks.push(task);
+    storage.savePlannedTasks(tasks);
+  },
+
+  updatePlannedTask: (id: string, updates: Partial<PlannedTask>): void => {
+    const tasks = storage.getPlannedTasks();
+    const index = tasks.findIndex((t) => t.id === id);
+    if (index !== -1) {
+      tasks[index] = { ...tasks[index], ...updates };
+      storage.savePlannedTasks(tasks);
+      
+      // Update entry completion percentage if task belongs to a habit
+      const task = tasks[index];
+      if (task.habitId) {
+        storage.recalculateHabitCompletion(task.habitId, task.date);
+      }
+    }
+  },
+
+  toggleTaskCompletion: (taskId: string): void => {
+    const tasks = storage.getPlannedTasks();
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+      task.completed = !task.completed;
+      if (task.completed) {
+        task.completedAt = new Date().toISOString();
+      } else {
+        task.completedAt = undefined;
+      }
+      storage.savePlannedTasks(tasks);
+      
+      // Update entry completion percentage if task belongs to a habit
+      if (task.habitId) {
+        storage.recalculateHabitCompletion(task.habitId, task.date);
+      }
+    }
+  },
+
+  deletePlannedTask: (id: string): void => {
+    const tasks = storage.getPlannedTasks();
+    const task = tasks.find((t) => t.id === id);
+    const filtered = tasks.filter((t) => t.id !== id);
+    storage.savePlannedTasks(filtered);
+    
+    // Update entry completion percentage if task belonged to a habit
+    if (task?.habitId) {
+      storage.recalculateHabitCompletion(task.habitId, task.date);
+    }
+  },
+
+  reorderPlannedTasks: (taskIds: string[]): void => {
+    const tasks = storage.getPlannedTasks();
+    const reordered = taskIds.map((id, index) => {
+      const task = tasks.find((t) => t.id === id);
+      if (task) {
+        return { ...task, order: index };
+      }
+      return null;
+    }).filter(Boolean) as PlannedTask[];
+    
+    // Add any tasks that weren't in the reorder list
+    const missingTasks = tasks.filter((t) => !taskIds.includes(t.id));
+    missingTasks.forEach((t, i) => {
+      reordered.push({ ...t, order: taskIds.length + i });
+    });
+    
+    storage.savePlannedTasks(reordered);
+  },
+
+  recalculateHabitCompletion: (habitId: string, date: string): void => {
+    const habitTasks = storage.getPlannedTasksForHabit(habitId, date);
+    const entries = storage.getEntries();
+    let entryIndex = entries.findIndex((e) => e.habitId === habitId && e.date === date);
+    
+    const completionPercentage = habitTasks.length > 0
+      ? (habitTasks.filter(t => t.completed).length / habitTasks.length) * 100
+      : 100;
+    
+    const allTasksCompleted = habitTasks.length > 0 && habitTasks.every(t => t.completed);
+    
+    // Create entry if it doesn't exist
+    if (entryIndex === -1) {
+      entries.push({
+        habitId,
+        date,
+        completed: allTasksCompleted,
+        completedAt: allTasksCompleted ? new Date().toISOString() : undefined,
+        completionPercentage,
+        tasks: habitTasks.map(t => t.id),
+      });
+    } else {
+      entries[entryIndex].completionPercentage = completionPercentage;
+      entries[entryIndex].completed = allTasksCompleted;
+      entries[entryIndex].tasks = habitTasks.map(t => t.id);
+      
+      if (allTasksCompleted) {
+        entries[entryIndex].completedAt = new Date().toISOString();
+      } else {
+        entries[entryIndex].completedAt = undefined;
+      }
+    }
+    
+    storage.saveEntries(entries);
   },
 };

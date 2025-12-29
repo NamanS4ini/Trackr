@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Habit, HabitEntry, PRIORITY_VALUES, PRIORITY_COLORS } from '@/lib/types';
-import { Check, Clock, StickyNote, FileText, Save, X } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Habit, HabitEntry, PRIORITY_VALUES, PRIORITY_COLORS, PlannedTask } from '@/lib/types';
+import { Check, Clock, StickyNote, FileText, Save, X, ListTodo } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { storage } from '@/lib/storage';
 
@@ -16,14 +17,17 @@ interface HabitChecklistProps {
   date: string;
   onToggle: (habitId: string, date: string, note?: string) => void;
   onUpdateNote: (habitId: string, date: string, note: string) => void;
+  onRefresh?: () => void;
 }
 
-export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote }: HabitChecklistProps) {
+export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, onRefresh }: HabitChecklistProps) {
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
+  const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [dailyNote, setDailyNote] = useState('');
   const [isEditingDailyNote, setIsEditingDailyNote] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [plannedTasks, setPlannedTasks] = useState<PlannedTask[]>([]);
 
   const today = format(new Date(), 'yyyy-MM-dd');
   const isPastDay = date < today;
@@ -34,6 +38,9 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote }
     if (dayNote) {
       setDailyNote(dayNote.note);
     }
+    // Load planned tasks for this date
+    const tasks = storage.getPlannedTasksForDate(date);
+    setPlannedTasks(tasks);
   });
 
   const activeHabits = habits
@@ -42,6 +49,10 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote }
 
   const getEntry = (habitId: string) => {
     return entries.find((e) => e.habitId === habitId && e.date === date);
+  };
+
+  const getHabitTasks = (habitId: string): PlannedTask[] => {
+    return plannedTasks.filter(t => t.habitId === habitId);
   };
 
   const toggleNote = (habitId: string) => {
@@ -56,6 +67,27 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote }
       }
     }
     setExpandedNotes(newExpanded);
+  };
+
+  const toggleTasks = (habitId: string) => {
+    const newExpanded = new Set(expandedTasks);
+    if (newExpanded.has(habitId)) {
+      newExpanded.delete(habitId);
+    } else {
+      newExpanded.add(habitId);
+    }
+    setExpandedTasks(newExpanded);
+  };
+
+  const handleToggleTask = (taskId: string) => {
+    storage.toggleTaskCompletion(taskId);
+    // Reload tasks
+    const tasks = storage.getPlannedTasksForDate(date);
+    setPlannedTasks(tasks);
+    // Trigger refresh to reload entries with updated completion status
+    if (onRefresh) {
+      onRefresh();
+    }
   };
 
   const handleToggle = (habitId: string) => {
@@ -96,7 +128,11 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote }
   const completedCount = activeHabits.filter(h => getEntry(h.id)?.completed).length;
   const totalPoints = activeHabits
     .filter(h => getEntry(h.id)?.completed)
-    .reduce((sum, h) => sum + PRIORITY_VALUES[h.priority], 0);
+    .reduce((sum, h) => {
+      const entry = getEntry(h.id);
+      const completionPercentage = entry?.completionPercentage ?? 100;
+      return sum + ((PRIORITY_VALUES[h.priority] * completionPercentage) / 100);
+    }, 0);
 
   return (
     <div className="space-y-2">
@@ -110,7 +146,7 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote }
                 <div className="text-xs text-muted-foreground">Done</div>
               </div>
               <div className="text-right">
-                <div className="text-xl font-bold text-purple-400">{totalPoints}</div>
+                <div className="text-xl font-bold text-purple-400">{totalPoints.toFixed(1)}</div>
                 <div className="text-xs text-muted-foreground">Pts</div>
               </div>
             </div>
@@ -188,8 +224,13 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote }
             const entry = getEntry(habit.id);
             const isCompleted = entry?.completed || false;
             const showNote = expandedNotes.has(habit.id);
+            const showTasks = expandedTasks.has(habit.id);
             const completedAt = entry?.completedAt;
             const hasNote = entry?.note && entry.note.length > 0;
+            const habitTasks = getHabitTasks(habit.id);
+            const hasTasks = habitTasks.length > 0;
+            const completionPercentage = entry?.completionPercentage ?? 100;
+            const completedTasksCount = habitTasks.filter(t => t.completed).length;
 
             return (
               <Card 
@@ -201,16 +242,20 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote }
                 <CardContent className="p-2 px-3">
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleToggle(habit.id)}
+                      onClick={() => !hasTasks && handleToggle(habit.id)}
+                      disabled={hasTasks}
                       className={`shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                        isCompleted
+                        hasTasks 
+                          ? 'border-zinc-700 cursor-not-allowed opacity-50'
+                          : isCompleted
                           ? 'bg-blue-500 border-blue-500'
                           : 'border-zinc-700 hover:border-zinc-500'
                       }`}
                       style={{
-                        backgroundColor: isCompleted ? habit.color : 'transparent',
-                        borderColor: isCompleted ? habit.color : undefined,
+                        backgroundColor: isCompleted && !hasTasks ? habit.color : 'transparent',
+                        borderColor: isCompleted && !hasTasks ? habit.color : undefined,
                       }}
+                      title={hasTasks ? 'Complete all tasks to mark habit as complete' : ''}
                     >
                       {isCompleted && <Check className="h-3 w-3 text-white" />}
                     </button>
@@ -230,6 +275,11 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote }
                         >
                           {PRIORITY_VALUES[habit.priority]}
                         </Badge>
+                        {hasTasks && (
+                          <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4">
+                            {completedTasksCount}/{habitTasks.length} tasks • {completionPercentage}%
+                          </Badge>
+                        )}
                         {isCompleted && completedAt && (
                           <span className="flex items-center gap-1 text-xs text-muted-foreground ml-auto">
                             <Clock className="h-3 w-3" />
@@ -242,6 +292,17 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote }
                       )}
                     </div>
 
+                    {hasTasks && (
+                      <Button
+                        variant={showTasks ? 'secondary' : 'ghost'}
+                        size="sm"
+                        onClick={() => toggleTasks(habit.id)}
+                        className="shrink-0 h-6 w-6 p-0"
+                      >
+                        <ListTodo className="h-3 w-3" />
+                      </Button>
+                    )}
+                    
                     <Button
                       variant={hasNote || showNote ? 'secondary' : 'ghost'}
                       size="sm"
@@ -251,6 +312,31 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote }
                       <StickyNote className="h-3 w-3" />
                     </Button>
                   </div>
+
+                  {showTasks && hasTasks && (
+                    <div className="mt-2 pl-7 space-y-1.5">
+                      {habitTasks.map(task => (
+                        <div key={task.id} className="flex items-start gap-2 p-2 bg-zinc-900 border border-zinc-800 rounded">
+                          <Checkbox
+                            checked={task.completed}
+                            onCheckedChange={() => !isPastDay && handleToggleTask(task.id)}
+                            disabled={isPastDay}
+                            className="mt-0.5"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                              {task.title}
+                            </p>
+                            {task.description && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {task.description}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   {showNote && (
                     <div className="mt-1.5 pl-7 space-y-2">

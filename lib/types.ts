@@ -17,6 +17,21 @@ export interface HabitEntry {
   completed: boolean;
   completedAt?: string; // ISO timestamp when completed
   note?: string;
+  tasks?: string[]; // Array of PlannedTask IDs linked to this habit entry
+  completionPercentage?: number; // 0-100, calculated from tasks (defaults to 100 if no tasks)
+}
+
+export interface PlannedTask {
+  id: string;
+  habitId?: string; // Optional link to existing habit
+  date: string; // ISO date string (YYYY-MM-DD) - target date
+  title: string;
+  description?: string;
+  priority: Priority;
+  completed: boolean;
+  completedAt?: string;
+  createdAt: string;
+  order: number;
 }
 
 export interface DayNote {

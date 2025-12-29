@@ -7,7 +7,7 @@ import { getToday } from '@/lib/utils-habit';
 import AppLayout from '@/components/app-layout';
 
 export default function TrackPage() {
-  const { habits, entries, toggleEntry, updateEntryNote, mounted } = useHabits();
+  const { habits, entries, toggleEntry, updateEntryNote, refreshData, mounted } = useHabits();
 
   if (!mounted) {
     return (
@@ -29,6 +29,7 @@ export default function TrackPage() {
           date={getToday()}
           onToggle={toggleEntry}
           onUpdateNote={updateEntryNote}
+          onRefresh={refreshData}
         />
       </div>
     </AppLayout>

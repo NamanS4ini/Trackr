@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ListChecks, LayoutDashboard, Settings, Flame, Zap, FileText } from 'lucide-react';
+import { ListChecks, LayoutDashboard, Settings, Flame, Zap, FileText, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHabits } from '@/components/habit-provider';
 import { subDays } from 'date-fns';
@@ -14,6 +14,7 @@ export function Navigation() {
 
   const links = [
     { href: '/track', label: 'Track', icon: ListChecks },
+    { href: '/plan', label: 'Plan', icon: Calendar },
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/notes', label: 'Notes', icon: FileText },
     { href: '/manage', label: 'Manage', icon: Settings },
