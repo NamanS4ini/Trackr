@@ -82,14 +82,19 @@ export function calculateHabitStats(habit: Habit, entries: HabitEntry[]): HabitS
 }
 
 export function calculateDailyScore(habits: Habit[], entries: HabitEntry[], date: string): number {
-  const dateEntries = entries.filter((e) => e.date === date && e.completed);
+  const dateEntries = entries.filter((e) => e.date === date);
   let score = 0;
   
   dateEntries.forEach((entry) => {
     const habit = habits.find((h) => h.id === entry.habitId);
     if (habit) {
       const completionPercentage = entry.completionPercentage ?? 100;
-      score += (PRIORITY_VALUES[habit.priority] * completionPercentage) / 100;
+      // Only count if:
+      // 1. Habit is fully completed (completed=true), OR
+      // 2. Has partial task completion (completionPercentage < 100 means tasks are in progress)
+      if (entry.completed || (completionPercentage > 0 && completionPercentage < 100)) {
+        score += (PRIORITY_VALUES[habit.priority] * completionPercentage) / 100;
+      }
     }
   });
 
@@ -106,6 +111,24 @@ export function calculateHabitCompletionPercentage(habitId: string, date: string
 
 export function getTomorrow(): string {
   return formatDate(addDays(new Date(), 1));
+}
+
+export function calculateTaskWeightage(
+  task: PlannedTask,
+  habit: Habit | undefined,
+  allTasksForHabit: PlannedTask[]
+): number {
+  if (!habit) return 0; // Standalone tasks have no weightage
+  
+  const habitPoints = PRIORITY_VALUES[habit.priority];
+  const taskPriorityMultiplier = PRIORITY_VALUES[task.priority];
+  const numberOfTasks = allTasksForHabit.length;
+  
+  if (numberOfTasks === 0) return 0;
+  
+  // Calculate: (HabitPriority * TaskPriority) / TotalTasks
+  // This ensures higher priority tasks within a habit are worth more
+  return (habitPoints * taskPriorityMultiplier) / numberOfTasks;
 }
 
 export function getHeatmapData(habits: Habit[], entries: HabitEntry[], days: number = 90) {

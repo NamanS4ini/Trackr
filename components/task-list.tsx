@@ -16,6 +16,7 @@ interface TaskListProps {
   onDeleteTask: (taskId: string) => void;
   groupByHabit?: boolean;
   readOnly?: boolean;
+  allowDelete?: boolean;
 }
 
 export function TaskList({ 
@@ -25,6 +26,7 @@ export function TaskList({
   onDeleteTask,
   groupByHabit = true,
   readOnly = false,
+  allowDelete = true,
 }: TaskListProps) {
   if (tasks.length === 0) {
     return (
@@ -92,6 +94,7 @@ export function TaskList({
                     onToggle={onToggleTask}
                     onDelete={onDeleteTask}
                     readOnly={readOnly}
+                    allowDelete={allowDelete}
                   />
                 ))}
               </div>
@@ -112,6 +115,7 @@ export function TaskList({
           onToggle={onToggleTask}
           onDelete={onDeleteTask}
           readOnly={readOnly}
+          allowDelete={allowDelete}
         />
       ))}
     </div>
@@ -123,9 +127,10 @@ interface TaskItemProps {
   onToggle: (taskId: string) => void;
   onDelete: (taskId: string) => void;
   readOnly: boolean;
+  allowDelete: boolean;
 }
 
-function TaskItem({ task, onToggle, onDelete, readOnly }: TaskItemProps) {
+function TaskItem({ task, onToggle, onDelete, readOnly, allowDelete }: TaskItemProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = () => {
@@ -184,7 +189,7 @@ function TaskItem({ task, onToggle, onDelete, readOnly }: TaskItemProps) {
                 {task.priority}
               </Badge>
               
-              {!readOnly && (
+              {allowDelete && (
                 <Button
                   variant="ghost"
                   size="sm"

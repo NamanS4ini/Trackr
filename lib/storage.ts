@@ -1,4 +1,4 @@
-import { Habit, HabitEntry, DayNote, PlannedTask } from './types';
+import { Habit, HabitEntry, DayNote, PlannedTask, PRIORITY_VALUES } from './types';
 
 const HABITS_KEY = 'habit-tracker-habits';
 const ENTRIES_KEY = 'habit-tracker-entries';
@@ -400,9 +400,16 @@ export const storage = {
     const entries = storage.getEntries();
     let entryIndex = entries.findIndex((e) => e.habitId === habitId && e.date === date);
     
-    const completionPercentage = habitTasks.length > 0
-      ? (habitTasks.filter(t => t.completed).length / habitTasks.length) * 100
-      : 100;
+    let completionPercentage = 100;
+    if (habitTasks.length > 0) {
+      // Calculate total priority weight of all tasks
+      const totalTaskWeight = habitTasks.reduce((sum, t) => sum + PRIORITY_VALUES[t.priority], 0);
+      // Calculate weighted completion
+      const completedWeight = habitTasks
+        .filter(t => t.completed)
+        .reduce((sum, t) => sum + PRIORITY_VALUES[t.priority], 0);
+      completionPercentage = totalTaskWeight > 0 ? (completedWeight / totalTaskWeight) * 100 : 0;
+    }
     
     const allTasksCompleted = habitTasks.length > 0 && habitTasks.every(t => t.completed);
     

@@ -163,6 +163,7 @@ export function PlannerView({
           onDeleteTask={onDeleteTask}
           groupByHabit={true}
           readOnly={!isToday}
+          allowDelete={true}
         />
       </Card>
 

@@ -237,7 +237,14 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                 key={habit.id} 
                 className={`border-zinc-800 transition-all ${
                   isCompleted ? 'bg-zinc-900/50' : 'hover:bg-zinc-900/30'
-                }`}
+                } ${!hasTasks || hasTasks ? 'cursor-pointer' : ''}`}
+                onClick={() => {
+                  if (!hasTasks) {
+                    handleToggle(habit.id);
+                  } else {
+                    toggleTasks(habit.id);
+                  }
+                }}
               >
                 <CardContent className="p-2 px-3">
                   <div className="flex items-center gap-2">
@@ -296,7 +303,10 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                       <Button
                         variant={showTasks ? 'secondary' : 'ghost'}
                         size="sm"
-                        onClick={() => toggleTasks(habit.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleTasks(habit.id);
+                        }}
                         className="shrink-0 h-6 w-6 p-0"
                       >
                         <ListTodo className="h-3 w-3" />
@@ -306,7 +316,10 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                     <Button
                       variant={hasNote || showNote ? 'secondary' : 'ghost'}
                       size="sm"
-                      onClick={() => toggleNote(habit.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleNote(habit.id);
+                      }}
                       className="shrink-0 h-6 w-6 p-0"
                     >
                       <StickyNote className="h-3 w-3" />
@@ -314,14 +327,18 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                   </div>
 
                   {showTasks && hasTasks && (
-                    <div className="mt-2 pl-7 space-y-1.5">
+                    <div className="mt-2 pl-7 space-y-1.5" onClick={(e) => e.stopPropagation()}>
                       {habitTasks.map(task => (
-                        <div key={task.id} className="flex items-start gap-2 p-2 bg-zinc-900 border border-zinc-800 rounded">
+                        <div 
+                          key={task.id} 
+                          className={`flex items-start gap-2 p-2 bg-zinc-900 border border-zinc-800 rounded ${!isPastDay ? 'cursor-pointer hover:bg-zinc-800/50' : ''} transition-colors`}
+                          onClick={() => !isPastDay && handleToggleTask(task.id)}
+                        >
                           <Checkbox
                             checked={task.completed}
                             onCheckedChange={() => !isPastDay && handleToggleTask(task.id)}
                             disabled={isPastDay}
-                            className="mt-0.5"
+                            className="mt-0.5 pointer-events-none"
                           />
                           <div className="flex-1 min-w-0">
                             <p className={`text-sm ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
@@ -339,7 +356,7 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                   )}
 
                   {showNote && (
-                    <div className="mt-1.5 pl-7 space-y-2">
+                    <div className="mt-1.5 pl-7 space-y-2" onClick={(e) => e.stopPropagation()}>
                       {isPastDay ? (
                         <div className="text-sm text-muted-foreground bg-zinc-900 border border-zinc-800 rounded-md p-2 whitespace-pre-wrap">
                           {entry?.note || 'No note added'}

@@ -30,7 +30,7 @@ export function StatsOverview({ habits, entries }: StatsOverviewProps) {
   const stats = [
     {
       title: "Today's Score",
-      value: todayScore,
+      value: todayScore.toFixed(1),
       subtitle: `${todayEntries.length} of ${activeHabits.length} habits`,
       icon: Target,
       color: '#3b82f6',
