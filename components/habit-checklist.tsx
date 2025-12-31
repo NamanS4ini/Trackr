@@ -137,22 +137,22 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
   return (
     <div className="space-y-2">
       <Card className="border-zinc-800">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">{format(new Date(date), 'EEEE, MMMM d')}</CardTitle>
-            <div className="flex items-center gap-3">
+        <CardHeader className="p-3 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+            <CardTitle className="text-base sm:text-lg">{format(new Date(date), 'EEEE, MMMM d')}</CardTitle>
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
               <div className="text-right">
-                <div className="text-xl font-bold text-blue-400">{completedCount}/{activeHabits.length}</div>
+                <div className="text-lg sm:text-xl font-bold text-blue-400">{completedCount}/{activeHabits.length}</div>
                 <div className="text-xs text-muted-foreground">Done</div>
               </div>
               <div className="text-right">
-                <div className="text-xl font-bold text-purple-400">{totalPoints.toFixed(1)}</div>
+                <div className="text-lg sm:text-xl font-bold text-purple-400">{totalPoints.toFixed(1)}</div>
                 <div className="text-xs text-muted-foreground">Pts</div>
               </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent className="pt-0 p-3 sm:p-6 sm:pt-0">
           <div className="border-t border-zinc-800 pt-4">
             <div className="flex items-center gap-2 mb-3">
               <FileText className="h-4 w-4 text-blue-400" />

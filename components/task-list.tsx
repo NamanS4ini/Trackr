@@ -62,18 +62,18 @@ export function TaskList({
           return (
             <div key={habitKey} className="space-y-2">
               {habit ? (
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                     <div
-                      className="w-4 h-4 rounded-full"
+                      className="w-4 h-4 rounded-full shrink-0"
                       style={{ backgroundColor: habit.color }}
                     />
-                    <h3 className="font-semibold text-lg">{habit.name}</h3>
+                    <h3 className="font-semibold text-base sm:text-lg">{habit.name}</h3>
                     <Badge variant="outline" className="text-xs">
                       {completedCount}/{totalCount} tasks
                     </Badge>
                   </div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs sm:text-sm text-muted-foreground">
                     {completionPercentage}% complete
                   </div>
                 </div>
@@ -142,23 +142,23 @@ function TaskItem({ task, onToggle, onDelete, readOnly, allowDelete }: TaskItemP
 
   return (
     <Card className={cn(
-      "p-4 transition-all",
+      "p-3 sm:p-4 transition-all",
       task.completed && "opacity-60",
       isDeleting && "opacity-30"
     )}>
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2 sm:gap-3">
         <Checkbox
           checked={task.completed}
           onCheckedChange={() => onToggle(task.id)}
           disabled={readOnly}
-          className="mt-1"
+          className="mt-1 shrink-0"
         />
         
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1">
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-2">
+            <div className="flex-1 w-full">
               <p className={cn(
-                "font-medium",
+                "font-medium text-sm sm:text-base break-words",
                 task.completed && "line-through text-muted-foreground"
               )}>
                 {task.title}
@@ -170,13 +170,13 @@ function TaskItem({ task, onToggle, onDelete, readOnly, allowDelete }: TaskItemP
                 )}
               </p>
               {task.description && (
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1 break-words">
                   {task.description}
                 </p>
               )}
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Badge
                 variant="secondary"
                 style={{

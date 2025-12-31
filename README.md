@@ -38,7 +38,7 @@ A modern, feature-rich habit tracking application built with Next.js 16. Track h
 - **Stats Overview**: Real-time daily score, completion rate, total habits, and all-time completions
 - **Weekly Progress Chart**: Line chart showing score trends over 8 weeks
 - **Weekly Scores Bar Chart**: Bar chart displaying weekly performance comparison
-- **Activity Heatmap**: 12-week color-coded visualization of daily activity intensity
+- **Activity Heatmap**: 12-Month color-coded visualization of daily activity intensity
 - **Habit Statistics**: Current streak, longest streak, total completions, and completion rate per habit
 - **Task Metrics**: Task completion tracking with weighted score contributions
 

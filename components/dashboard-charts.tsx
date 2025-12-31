@@ -46,10 +46,10 @@ export function DashboardCharts({ habits, entries }: DashboardChartsProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <h3 className="text-lg font-semibold">Progress Charts</h3>
         <Select value={timeRange} onValueChange={(v) => setTimeRange(v as ChartFormat)}>
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="w-full sm:w-32">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -60,26 +60,26 @@ export function DashboardCharts({ habits, entries }: DashboardChartsProps) {
         </Select>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>{chartTitle} Progress</CardTitle>
+            <CardTitle className="text-base sm:text-lg">{chartTitle} Progress</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+          <CardContent className="px-2 sm:px-6">
+            <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
                 <XAxis 
                   dataKey="date" 
                   stroke="#71717a"
-                  style={{ fontSize: '12px' }}
+                  style={{ fontSize: '10px' }}
                   angle={timeRange === 'daily' ? -45 : 0}
                   textAnchor={timeRange === 'daily' ? 'end' : 'middle'}
                   height={timeRange === 'daily' ? 60 : 30}
                 />
                 <YAxis 
                   stroke="#71717a"
-                  style={{ fontSize: '12px' }}
+                  style={{ fontSize: '10px' }}
                 />
                 <Tooltip
                   contentStyle={{
@@ -104,23 +104,23 @@ export function DashboardCharts({ habits, entries }: DashboardChartsProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>{chartTitle} Scores</CardTitle>
+            <CardTitle className="text-base sm:text-lg">{chartTitle} Scores</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+          <CardContent className="px-2 sm:px-6">
+            <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
                 <XAxis 
                   dataKey="date" 
                   stroke="#71717a"
-                  style={{ fontSize: '12px' }}
+                  style={{ fontSize: '10px' }}
                   angle={timeRange === 'daily' ? -45 : 0}
                   textAnchor={timeRange === 'daily' ? 'end' : 'middle'}
                   height={timeRange === 'daily' ? 60 : 30}
                 />
                 <YAxis 
                   stroke="#71717a"
-                  style={{ fontSize: '12px' }}
+                  style={{ fontSize: '10px' }}
                 />
                 <Tooltip
                   contentStyle={{

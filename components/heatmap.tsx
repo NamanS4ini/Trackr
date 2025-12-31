@@ -95,15 +95,15 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Activity Heatmap - {selectedYear}</CardTitle>
+      <CardHeader className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <CardTitle className="text-base sm:text-lg">Activity Heatmap - {selectedYear}</CardTitle>
           <Select value={selectedYear.toString()} onValueChange={(v) => setSelectedYear(parseInt(v))}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-full sm:w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {availableYears.map((year) => (
+              {availableYears.map(year => (
                 <SelectItem key={year} value={year.toString()}>
                   {year}
                 </SelectItem>
@@ -112,20 +112,22 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
           </Select>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="heatmap-container">
-          <CalendarHeatmap
-            startDate={new Date(selectedYear, 0, 1)}
-            endDate={new Date(selectedYear, 11, 31)}
-            values={heatmapData}
-            classForValue={getColorClass}
-            titleForValue={getTitleText}
-            showWeekdayLabels
-          />
-        </div>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-4">
-          <span>Less</span>
-          <div className="flex gap-1">
+      <CardContent className="p-2 sm:p-6">
+        <div className="overflow-x-auto -mx-2 sm:mx-0">
+          <div className="min-w-[600px] sm:min-w-0">
+            <div className="heatmap-container">
+              <CalendarHeatmap
+                startDate={new Date(selectedYear, 0, 1)}
+                endDate={new Date(selectedYear, 11, 31)}
+                values={heatmapData}
+                classForValue={getColorClass}
+                titleForValue={getTitleText}
+                showWeekdayLabels
+              />
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-4">
+              <span>Less</span>
+              <div className="flex gap-1">
             <div className="w-3 h-3 rounded-sm border border-zinc-700" style={{ backgroundColor: '#27272a' }} />
             <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#1e40af' }} />
             <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#2563eb' }} />
@@ -133,6 +135,8 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
             <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#60a5fa' }} />
           </div>
           <span>More</span>
+        </div>
+          </div>
         </div>
         
         <style jsx global>{`

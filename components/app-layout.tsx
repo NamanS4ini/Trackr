@@ -13,11 +13,11 @@ export default function AppLayout({
 
   return (
     <div className="min-h-screen bg-black">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <div className="flex items-center justify-between mb-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">Trackr</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Trackr</h1>
+            <p className="text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-base">
               Build better habits with priority-based tracking
             </p>
           </div>

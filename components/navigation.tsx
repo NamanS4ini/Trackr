@@ -69,9 +69,9 @@ export function Navigation() {
   const atLeastOneStreak = calculateAtLeastOneStreak();
 
   return (
-    <nav className="border-b border-zinc-800 mb-8">
-      <div className="flex items-center justify-between">
-        <div className="flex gap-6">
+    <nav className="border-b border-zinc-800 mb-6 sm:mb-8">
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+        <div className="flex gap-3 sm:gap-6 overflow-x-auto pb-4 scrollbar-hide">
           {links.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href || pathname?.startsWith(href + '/');
             return (
@@ -79,34 +79,34 @@ export function Navigation() {
                 key={href}
                 href={href}
                 className={cn(
-                  'flex items-center gap-2 pb-4 border-b-2 transition-colors',
+                  'flex items-center gap-2 pb-2 sm:pb-4 border-b-2 transition-colors whitespace-nowrap text-sm sm:text-base',
                   isActive
                     ? 'border-blue-600 text-foreground'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 )}
               >
                 <Icon className="h-4 w-4" />
-                {label}
+                <span className="hidden sm:inline">{label}</span>
               </Link>
             );
           })}
         </div>
         
-        <div className="flex items-center gap-4 pb-4">
+        <div className="flex items-center gap-2 sm:gap-4 pb-4 justify-center lg:justify-end">
           <div 
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-br from-orange-950/50 to-red-950/50 border border-orange-900/50 cursor-help transition-all hover:scale-105"
+            className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-md bg-gradient-to-br from-orange-950/50 to-red-950/50 border border-orange-900/50 cursor-help transition-all hover:scale-105"
             title="All Killed - All habits completed each day"
           >
-            <Flame className="h-4 w-4 text-orange-500" />
-            <span className="text-sm font-semibold text-orange-400">{allKilledStreak}</span>
+            <Flame className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-orange-500" />
+            <span className="text-xs sm:text-sm font-semibold text-orange-400">{allKilledStreak}</span>
           </div>
           
           <div 
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-br from-blue-950/50 to-cyan-950/50 border border-blue-900/50 cursor-help transition-all hover:scale-105"
+            className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-md bg-gradient-to-br from-blue-950/50 to-cyan-950/50 border border-blue-900/50 cursor-help transition-all hover:scale-105"
             title="At Least One - Stayed active daily"
           >
-            <Zap className="h-4 w-4 text-blue-500" />
-            <span className="text-sm font-semibold text-blue-400">{atLeastOneStreak}</span>
+            <Zap className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-blue-500" />
+            <span className="text-xs sm:text-sm font-semibold text-blue-400">{atLeastOneStreak}</span>
           </div>
         </div>
       </div>

@@ -81,10 +81,10 @@ function SortableHabit({ habit, stats, onUpdate, onDelete, showArchiveToggle = t
           className="absolute top-0 left-0 w-1 h-full"
           style={{ backgroundColor: habit.color }}
         />
-        <CardContent className="p-2 pl-3">
-          <div className="flex items-center gap-2">
+        <CardContent className="p-3 sm:p-4 pl-4 sm:pl-5">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-2">
             <button
-              className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
+              className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors self-start lg:self-center shrink-0"
               {...attributes}
               {...listeners}
             >
@@ -92,8 +92,8 @@ function SortableHabit({ habit, stats, onUpdate, onDelete, showArchiveToggle = t
             </button>
             
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-medium">{habit.name}</h3>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-sm sm:text-base font-medium">{habit.name}</h3>
                 <Badge 
                   variant="outline" 
                   className="text-xs px-2 py-0.5 h-5"
@@ -106,30 +106,30 @@ function SortableHabit({ habit, stats, onUpdate, onDelete, showArchiveToggle = t
                 </Badge>
               </div>
               {habit.description && (
-                <p className="text-sm text-muted-foreground">{habit.description}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">{habit.description}</p>
               )}
             </div>
 
-            <div className="flex items-center gap-4 ml-2">
+            <div className="grid grid-cols-4 gap-2 sm:gap-3 lg:flex lg:items-center lg:gap-4 lg:ml-2">
               <div className="text-center">
-                <div className="text-xl font-bold">{stats.currentStreak}</div>
+                <div className="text-base sm:text-xl font-bold">{stats.currentStreak}</div>
                 <div className="text-xs text-muted-foreground">Current</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold">{stats.longestStreak}</div>
+                <div className="text-base sm:text-xl font-bold">{stats.longestStreak}</div>
                 <div className="text-xs text-muted-foreground">Best</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold">{stats.totalCompletions}</div>
+                <div className="text-base sm:text-xl font-bold">{stats.totalCompletions}</div>
                 <div className="text-xs text-muted-foreground">Total</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold">{stats.completionRate}%</div>
+                <div className="text-base sm:text-xl font-bold">{stats.completionRate}%</div>
                 <div className="text-xs text-muted-foreground">Rate</div>
               </div>
             </div>
 
-            <div className="flex items-center gap-1 ml-2">
+            <div className="flex items-center gap-1 lg:ml-2 self-start lg:self-center">
               <Button
                 variant="ghost"
                 size="sm"

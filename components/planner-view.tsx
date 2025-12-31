@@ -85,18 +85,18 @@ export function PlannerView({
     }, 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Date Navigation */}
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={handlePrevDay}>
+      <Card className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 gap-4">
+          <div className="flex items-center gap-2 justify-between sm:justify-start">
+            <Button variant="outline" size="icon" onClick={handlePrevDay} className="shrink-0">
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <div className="text-center min-w-[300px]">
+            <div className="text-center flex-1 sm:min-w-[250px] md:min-w-[300px]">
               <div className="flex items-center justify-center gap-2">
-                <CalendarIcon className="w-5 h-5 text-muted-foreground" />
-                <h2 className="text-xl font-semibold">{dateFormatted}</h2>
+                <CalendarIcon className="w-4 sm:w-5 h-4 sm:h-5 text-muted-foreground" />
+                <h2 className="text-base sm:text-xl font-semibold truncate">{dateFormatted}</h2>
               </div>
               <p className="text-sm text-muted-foreground mt-1">
                 {isToday && 'Today'}
@@ -105,37 +105,37 @@ export function PlannerView({
                 {!isToday && !isTomorrow && isDateInFuture && 'Future Date (Planning Only)'}
               </p>
             </div>
-            <Button variant="outline" size="icon" onClick={handleNextDay}>
+            <Button variant="outline" size="icon" onClick={handleNextDay} className="shrink-0">
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
 
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleToday}>
+          <div className="flex gap-2 flex-wrap justify-center sm:justify-end">
+            <Button variant="outline" size="sm" onClick={handleToday} className="text-xs sm:text-sm">
               Today
             </Button>
-            <Button variant="outline" onClick={handleTomorrow}>
+            <Button variant="outline" size="sm" onClick={handleTomorrow} className="text-xs sm:text-sm">
               Tomorrow
             </Button>
           </div>
         </div>
 
         {/* Statistics */}
-        <div className="grid grid-cols-4 gap-4 mt-4">
-          <div className="text-center p-3 bg-secondary/50 rounded-lg">
-            <div className="text-2xl font-bold">{totalTasks}</div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-4">
+          <div className="text-center p-2 sm:p-3 bg-secondary/50 rounded-lg">
+            <div className="text-xl sm:text-2xl font-bold">{totalTasks}</div>
             <div className="text-xs text-muted-foreground">Total Tasks</div>
           </div>
-          <div className="text-center p-3 bg-secondary/50 rounded-lg">
-            <div className="text-2xl font-bold">{completedTasks}</div>
+          <div className="text-center p-2 sm:p-3 bg-secondary/50 rounded-lg">
+            <div className="text-xl sm:text-2xl font-bold">{completedTasks}</div>
             <div className="text-xs text-muted-foreground">Completed</div>
           </div>
-          <div className="text-center p-3 bg-secondary/50 rounded-lg">
-            <div className="text-2xl font-bold">{tasksLinkedToHabits}</div>
+          <div className="text-center p-2 sm:p-3 bg-secondary/50 rounded-lg">
+            <div className="text-xl sm:text-2xl font-bold">{tasksLinkedToHabits}</div>
             <div className="text-xs text-muted-foreground">Habit Tasks</div>
           </div>
-          <div className="text-center p-3 bg-secondary/50 rounded-lg">
-            <div className="text-2xl font-bold">{estimatedScore.toFixed(1)}</div>
+          <div className="text-center p-2 sm:p-3 bg-secondary/50 rounded-lg">
+            <div className="text-xl sm:text-2xl font-bold">{estimatedScore.toFixed(1)}</div>
             <div className="text-xs text-muted-foreground">Est. Points</div>
           </div>
         </div>

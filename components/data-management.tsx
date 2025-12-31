@@ -64,17 +64,17 @@ export function DataManagement({ habits = [], stats = {}, onUpdate = () => {}, o
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Data Management</CardTitle>
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="text-base sm:text-lg">Data Management</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 sm:p-6 pt-0">
         <div className="space-y-3">
-          <div className="flex gap-2">
-            <Button onClick={handleExport} variant="outline" className="gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button onClick={handleExport} variant="outline" className="gap-2 w-full sm:w-auto text-sm">
               <Download className="h-4 w-4" />
               Export Data
             </Button>
-            <Button onClick={handleImport} variant="outline" className="gap-2" disabled={importing}>
+            <Button onClick={handleImport} variant="outline" className="gap-2 w-full sm:w-auto text-sm" disabled={importing}>
               <Upload className="h-4 w-4" />
               {importing ? 'Importing...' : 'Import Data'}
             </Button>
