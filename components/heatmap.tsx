@@ -9,30 +9,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import CalendarHeatmap from 'react-calendar-heatmap';
-import 'react-calendar-heatmap/dist/styles.css';
 import { Habit, HabitEntry } from '@/lib/types';
 import { calculateDailyScore } from '@/lib/utils-habit';
 import { storage } from '@/lib/storage';
-import ReactDOMServer from 'react-dom/server';
 
 interface HeatmapProps {
   habits: Habit[];
   entries: HabitEntry[];
 }
 
+interface DayData {
+  date: string;
+  count: number;
+  month: number;
+  day: number;
+}
+
 export function Heatmap({ habits, entries }: HeatmapProps) {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [availableYears, setAvailableYears] = useState<number[]>([currentYear]);
+  const [hoveredDay, setHoveredDay] = useState<DayData | null>(null);
 
   useEffect(() => {
     const archived = storage.getArchivedYears();
-    const years = [currentYear, ...archived].sort((a, b) => b - a);
-    setAvailableYears(years);
+    const allYears = [currentYear, ...archived];
+    const uniqueYears = Array.from(new Set(allYears)).sort((a, b) => b - a);
+    setAvailableYears(uniqueYears);
   }, [currentYear]);
 
-  const heatmapData = useMemo(() => {
+  const { heatmapData, maxScore } = useMemo(() => {
     let yearHabits = habits;
     let yearEntries = entries;
     
@@ -47,50 +53,79 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
       }
     }
 
-    const data: Array<{ date: string; count: number }> = [];
-    const startDate = new Date(selectedYear, 0, 1);
-    const endDate = new Date(selectedYear, 11, 31);
+    const data: DayData[] = [];
     
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-      const dateStr = d.toISOString().split('T')[0];
-      const score = calculateDailyScore(yearHabits, yearEntries, dateStr);
-      data.push({
-        date: dateStr,
-        count: score,
-      });
+    // Generate dates for the entire year
+    for (let month = 0; month < 12; month++) {
+      const daysInMonth = new Date(selectedYear, month + 1, 0).getDate();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${selectedYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const score = calculateDailyScore(yearHabits, yearEntries, dateStr);
+        data.push({
+          date: dateStr,
+          count: score,
+          month: month,
+          day: day
+        });
+      }
     }
 
-    return data;
+    const max = Math.max(...data.map(d => d.count), 1);
+    
+    return { heatmapData: data, maxScore: max };
   }, [habits, entries, selectedYear, currentYear]);
 
-  const maxScore = useMemo(() => {
-    return Math.max(...heatmapData.map(d => d.count), 1);
-  }, [heatmapData]);
-
-  const getColorClass = (value: any) => {
-    if (!value || value.count === 0) {
-      return 'color-empty';
-    }
-    const intensity = value.count / maxScore;
-    if (intensity < 0.25) return 'color-scale-1';
-    if (intensity < 0.5) return 'color-scale-2';
-    if (intensity < 0.75) return 'color-scale-3';
-    return 'color-scale-4';
+  const getColor = (count: number) => {
+    if (count === 0) return '#27272a';
+    const intensity = count / maxScore;
+    if (intensity < 0.25) return '#1e40af';
+    if (intensity < 0.5) return '#2563eb';
+    if (intensity < 0.75) return '#3b82f6';
+    return '#60a5fa';
   };
 
-  const getTitleText = (value: any) => {
-    if (!value || !value.date) {
-      return '';
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  // Group days by week
+  const weeks: DayData[][] = useMemo(() => {
+    const firstDay = new Date(selectedYear, 0, 1).getDay();
+    const result: DayData[][] = [[]];
+    
+    // Add empty days for the first week
+    for (let i = 0; i < firstDay; i++) {
+      result[0].push({ date: '', count: -1, month: -1, day: -1 });
     }
-    const date = new Date(value.date);
-    const points = value.count || 0;
-    const dateStr = date.toLocaleDateString('en-US', {
+    
+    // Add all days
+    heatmapData.forEach(day => {
+      const currentWeek = result[result.length - 1];
+      if (currentWeek.length === 7) {
+        result.push([day]);
+      } else {
+        currentWeek.push(day);
+      }
+    });
+    
+    // Fill last week
+    const lastWeek = result[result.length - 1];
+    while (lastWeek.length < 7) {
+      lastWeek.push({ date: '', count: -1, month: -1, day: -1 });
+    }
+    
+    return result;
+  }, [heatmapData, selectedYear]);
+
+  const formatDate = (dateStr: string, count: number) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr + 'T00:00:00');
+    const formatted = date.toLocaleDateString('en-US', {
       weekday: 'short',
-      year: 'numeric',
       month: 'short',
       day: 'numeric',
+      year: 'numeric',
     });
-    return `${dateStr} - ${points} point${points !== 1 ? 's' : ''}`;
+    return `${formatted} - ${count} point${count !== 1 ? 's' : ''}`;
   };
 
   return (
@@ -114,71 +149,85 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
       </CardHeader>
       <CardContent className="p-2 sm:p-6">
         <div className="overflow-x-auto -mx-2 sm:mx-0">
-          <div className="min-w-[600px] sm:min-w-0">
-            <div className="heatmap-container">
-              <CalendarHeatmap
-                startDate={new Date(selectedYear, 0, 1)}
-                endDate={new Date(selectedYear, 11, 31)}
-                values={heatmapData}
-                classForValue={getColorClass}
-                titleForValue={getTitleText}
-                showWeekdayLabels
-              />
+          <div className="min-w-[800px]">
+            {/* Month labels */}
+            <div className="flex ml-8 mb-1">
+              {months.map((month, idx) => {
+                const monthWeeks = weeks.filter(week => 
+                  week.some(day => day.month === idx)
+                );
+                const weekSpan = monthWeeks.length;
+                return weekSpan > 0 ? (
+                  <div 
+                    key={month} 
+                    className="text-xs text-muted-foreground"
+                    style={{ width: `${weekSpan * 14}px` }}
+                  >
+                    {month}
+                  </div>
+                ) : null;
+              })}
             </div>
+
+            {/* Calendar grid */}
+            <div className="flex">
+              {/* Weekday labels */}
+              <div className="flex flex-col gap-[3px] mr-2">
+                {weekdays.map((day, idx) => (
+                  <div 
+                    key={day} 
+                    className="text-[10px] text-muted-foreground h-[11px] flex items-center"
+                  >
+                    {idx % 2 === 1 ? day : ''}
+                  </div>
+                ))}
+              </div>
+
+              {/* Days grid */}
+              <div className="flex gap-[3px]">
+                {weeks.map((week, weekIdx) => (
+                  <div key={weekIdx} className="flex flex-col gap-[3px]">
+                    {week.map((day, dayIdx) => (
+                      <div
+                        key={`${weekIdx}-${dayIdx}`}
+                        className={`w-[11px] h-[11px] rounded-sm transition-all ${
+                          day.count >= 0 ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''
+                        }`}
+                        style={{
+                          backgroundColor: day.count >= 0 ? getColor(day.count) : 'transparent',
+                          border: day.count === -1 ? 'none' : day.count === 0 ? '1px solid #52525b' : 'none'
+                        }}
+                        onMouseEnter={() => day.count >= 0 && setHoveredDay(day)}
+                        onMouseLeave={() => setHoveredDay(null)}
+                        title={day.date ? formatDate(day.date, day.count) : ''}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Tooltip */}
+            {hoveredDay && hoveredDay.date && (
+              <div className="mt-3 text-xs text-muted-foreground p-2 bg-zinc-800 rounded border border-zinc-700">
+                {formatDate(hoveredDay.date, hoveredDay.count)}
+              </div>
+            )}
+
+            {/* Legend */}
             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-4">
               <span>Less</span>
               <div className="flex gap-1">
-            <div className="w-3 h-3 rounded-sm border border-zinc-700" style={{ backgroundColor: '#27272a' }} />
-            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#1e40af' }} />
-            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#2563eb' }} />
-            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#3b82f6' }} />
-            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#60a5fa' }} />
+                <div className="w-3 h-3 rounded-sm border border-zinc-700" style={{ backgroundColor: '#27272a' }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#1e40af' }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#2563eb' }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#3b82f6' }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#60a5fa' }} />
+              </div>
+              <span>More</span>
+            </div>
           </div>
-          <span>More</span>
         </div>
-          </div>
-        </div>
-        
-        <style jsx global>{`
-          .heatmap-container {
-            width: 100%;
-            overflow-x: auto;
-          }
-          
-          .react-calendar-heatmap {
-            width: 100%;
-          }
-          
-          .react-calendar-heatmap text {
-            font-size: 10px;
-            fill: #a1a1aa;
-          }
-          
-          .react-calendar-heatmap .color-empty {
-            fill: #27272a;
-          }
-          
-          .react-calendar-heatmap .color-scale-1 {
-            fill: #1e40af;
-          }
-          
-          .react-calendar-heatmap .color-scale-2 {
-            fill: #2563eb;
-          }
-          
-          .react-calendar-heatmap .color-scale-3 {
-            fill: #3b82f6;
-          }
-          
-          .react-calendar-heatmap .color-scale-4 {
-            fill: #60a5fa;
-          }
-          
-          .react-calendar-heatmap rect:hover {
-            stroke: #60a5fa;
-            stroke-width: 2;
-          }
-        `}</style>
       </CardContent>
     </Card>
   );

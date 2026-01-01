@@ -155,6 +155,49 @@ export const storage = {
   importData: (data: { habits: Habit[]; entries: HabitEntry[] }): void => {
     storage.saveHabits(data.habits);
     storage.saveEntries(data.entries);
+    
+    // Detect and archive years from imported data
+    const currentYear = new Date().getFullYear();
+    const yearsInData = new Set<number>();
+    
+    data.entries.forEach(entry => {
+      // Parse date as YYYY-MM-DD to avoid timezone issues
+      const [year] = entry.date.split('-').map(Number);
+      if (year < currentYear) {
+        yearsInData.add(year);
+      }
+    });
+    
+    // Update archived years list
+    if (yearsInData.size > 0) {
+      const archivedYears = storage.getArchivedYears();
+      const updatedYears = new Set([...archivedYears, ...Array.from(yearsInData)]);
+      const sortedYears = Array.from(updatedYears).sort((a, b) => b - a);
+      localStorage.setItem('habit-tracker-archived-years', JSON.stringify(sortedYears));
+      
+      // Create archived year data for each year
+      yearsInData.forEach(year => {
+        const yearHabits = data.habits.filter(h => {
+          const createdYear = new Date(h.createdAt).getFullYear();
+          return createdYear <= year;
+        });
+        
+        const yearEntries = data.entries.filter(e => {
+          // Parse date as YYYY-MM-DD to avoid timezone issues
+          const [entryYear] = e.date.split('-').map(Number);
+          return entryYear === year;
+        });
+        
+        const yearData = {
+          year,
+          habits: yearHabits,
+          entries: yearEntries,
+          archivedAt: new Date().toISOString(),
+        };
+        
+        localStorage.setItem(`habit-tracker-year-${year}`, JSON.stringify(yearData));
+      });
+    }
   },
 
   // Year archiving

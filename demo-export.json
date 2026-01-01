@@ -1,0 +1,632 @@
+{
+  "habits": [
+    {
+      "id": "habit-1",
+      "name": "Morning Exercise",
+      "description": "30 minutes of cardio or strength training",
+      "priority": "high",
+      "color": "#3b82f6",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "archived": false,
+      "order": 0
+    },
+    {
+      "id": "habit-2",
+      "name": "Read Books",
+      "description": "Read for at least 20 minutes",
+      "priority": "medium",
+      "color": "#10b981",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "archived": false,
+      "order": 1
+    },
+    {
+      "id": "habit-3",
+      "name": "Meditation",
+      "description": "10 minutes of mindfulness meditation",
+      "priority": "high",
+      "color": "#8b5cf6",
+      "createdAt": "2024-01-15T08:00:00.000Z",
+      "archived": false,
+      "order": 2
+    },
+    {
+      "id": "habit-4",
+      "name": "Drink Water",
+      "description": "Drink 8 glasses of water throughout the day",
+      "priority": "medium",
+      "color": "#06b6d4",
+      "createdAt": "2024-02-01T08:00:00.000Z",
+      "archived": false,
+      "order": 3
+    },
+    {
+      "id": "habit-5",
+      "name": "Journal",
+      "description": "Write daily reflections and gratitude",
+      "priority": "low",
+      "color": "#f59e0b",
+      "createdAt": "2024-03-01T08:00:00.000Z",
+      "archived": false,
+      "order": 4
+    },
+    {
+      "id": "habit-6",
+      "name": "Code Practice",
+      "description": "Practice coding for 1 hour",
+      "priority": "critical",
+      "color": "#ef4444",
+      "createdAt": "2025-01-01T08:00:00.000Z",
+      "archived": false,
+      "order": 5
+    },
+    {
+      "id": "habit-7",
+      "name": "Language Learning",
+      "description": "Practice Spanish on Duolingo",
+      "priority": "medium",
+      "color": "#ec4899",
+      "createdAt": "2025-06-01T08:00:00.000Z",
+      "archived": false,
+      "order": 6
+    }
+  ],
+  "entries": [
+    {
+      "habitId": "habit-1",
+      "date": "2024-01-01",
+      "completed": true,
+      "completedAt": "2024-01-01T09:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2024-01-02",
+      "completed": true,
+      "completedAt": "2024-01-02T09:15:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2024-01-03",
+      "completed": false,
+      "completionPercentage": 0
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2024-01-04",
+      "completed": true,
+      "completedAt": "2024-01-04T10:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2024-01-05",
+      "completed": true,
+      "completedAt": "2024-01-05T09:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2024-01-06",
+      "completed": true,
+      "completedAt": "2024-01-06T08:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2024-01-07",
+      "completed": false,
+      "completionPercentage": 0
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2024-01-08",
+      "completed": true,
+      "completedAt": "2024-01-08T09:45:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2024-01-01",
+      "completed": true,
+      "completedAt": "2024-01-01T21:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2024-01-02",
+      "completed": true,
+      "completedAt": "2024-01-02T20:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2024-01-03",
+      "completed": true,
+      "completedAt": "2024-01-03T19:45:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2024-01-04",
+      "completed": false,
+      "completionPercentage": 0
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2024-01-05",
+      "completed": true,
+      "completedAt": "2024-01-05T22:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2024-02-14",
+      "completed": true,
+      "completedAt": "2024-02-14T09:00:00.000Z",
+      "note": "Great workout today!",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2024-02-14",
+      "completed": true,
+      "completedAt": "2024-02-14T21:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-3",
+      "date": "2024-02-14",
+      "completed": true,
+      "completedAt": "2024-02-14T07:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-4",
+      "date": "2024-02-14",
+      "completed": true,
+      "completedAt": "2024-02-14T19:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2024-03-17",
+      "completed": true,
+      "completedAt": "2024-03-17T08:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2024-03-17",
+      "completed": true,
+      "completedAt": "2024-03-17T20:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-3",
+      "date": "2024-03-17",
+      "completed": true,
+      "completedAt": "2024-03-17T06:45:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-4",
+      "date": "2024-03-17",
+      "completed": false,
+      "completionPercentage": 0
+    },
+    {
+      "habitId": "habit-5",
+      "date": "2024-03-17",
+      "completed": true,
+      "completedAt": "2024-03-17T22:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2024-06-15",
+      "completed": true,
+      "completedAt": "2024-06-15T09:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2024-06-15",
+      "completed": true,
+      "completedAt": "2024-06-15T21:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-3",
+      "date": "2024-06-15",
+      "completed": true,
+      "completedAt": "2024-06-15T07:15:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-4",
+      "date": "2024-06-15",
+      "completed": true,
+      "completedAt": "2024-06-15T18:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-5",
+      "date": "2024-06-15",
+      "completed": true,
+      "completedAt": "2024-06-15T23:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2024-09-20",
+      "completed": true,
+      "completedAt": "2024-09-20T08:45:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2024-09-20",
+      "completed": false,
+      "completionPercentage": 0
+    },
+    {
+      "habitId": "habit-3",
+      "date": "2024-09-20",
+      "completed": true,
+      "completedAt": "2024-09-20T07:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-4",
+      "date": "2024-09-20",
+      "completed": true,
+      "completedAt": "2024-09-20T19:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2024-12-25",
+      "completed": false,
+      "completionPercentage": 0
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2024-12-25",
+      "completed": true,
+      "completedAt": "2024-12-25T20:00:00.000Z",
+      "note": "Finished a great book!",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-3",
+      "date": "2024-12-25",
+      "completed": true,
+      "completedAt": "2024-12-25T08:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-4",
+      "date": "2024-12-25",
+      "completed": true,
+      "completedAt": "2024-12-25T17:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-5",
+      "date": "2024-12-25",
+      "completed": true,
+      "completedAt": "2024-12-25T23:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2025-01-01",
+      "completed": true,
+      "completedAt": "2025-01-01T10:00:00.000Z",
+      "note": "New year, new me!",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2025-01-01",
+      "completed": true,
+      "completedAt": "2025-01-01T21:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-3",
+      "date": "2025-01-01",
+      "completed": true,
+      "completedAt": "2025-01-01T07:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-4",
+      "date": "2025-01-01",
+      "completed": true,
+      "completedAt": "2025-01-01T18:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-5",
+      "date": "2025-01-01",
+      "completed": true,
+      "completedAt": "2025-01-01T22:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-6",
+      "date": "2025-01-01",
+      "completed": true,
+      "completedAt": "2025-01-01T15:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2025-01-15",
+      "completed": true,
+      "completedAt": "2025-01-15T09:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2025-01-15",
+      "completed": true,
+      "completedAt": "2025-01-15T20:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-3",
+      "date": "2025-01-15",
+      "completed": false,
+      "completionPercentage": 0
+    },
+    {
+      "habitId": "habit-4",
+      "date": "2025-01-15",
+      "completed": true,
+      "completedAt": "2025-01-15T19:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-6",
+      "date": "2025-01-15",
+      "completed": true,
+      "completedAt": "2025-01-15T16:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2025-04-10",
+      "completed": true,
+      "completedAt": "2025-04-10T08:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2025-04-10",
+      "completed": true,
+      "completedAt": "2025-04-10T21:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-3",
+      "date": "2025-04-10",
+      "completed": true,
+      "completedAt": "2025-04-10T07:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-4",
+      "date": "2025-04-10",
+      "completed": true,
+      "completedAt": "2025-04-10T18:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-5",
+      "date": "2025-04-10",
+      "completed": false,
+      "completionPercentage": 0
+    },
+    {
+      "habitId": "habit-6",
+      "date": "2025-04-10",
+      "completed": true,
+      "completedAt": "2025-04-10T14:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2025-07-04",
+      "completed": true,
+      "completedAt": "2025-07-04T09:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2025-07-04",
+      "completed": true,
+      "completedAt": "2025-07-04T20:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-3",
+      "date": "2025-07-04",
+      "completed": true,
+      "completedAt": "2025-07-04T07:15:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-4",
+      "date": "2025-07-04",
+      "completed": true,
+      "completedAt": "2025-07-04T19:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-6",
+      "date": "2025-07-04",
+      "completed": true,
+      "completedAt": "2025-07-04T15:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-7",
+      "date": "2025-07-04",
+      "completed": true,
+      "completedAt": "2025-07-04T12:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2025-10-31",
+      "completed": true,
+      "completedAt": "2025-10-31T08:45:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2025-10-31",
+      "completed": true,
+      "completedAt": "2025-10-31T21:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-3",
+      "date": "2025-10-31",
+      "completed": false,
+      "completionPercentage": 0
+    },
+    {
+      "habitId": "habit-4",
+      "date": "2025-10-31",
+      "completed": true,
+      "completedAt": "2025-10-31T18:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-5",
+      "date": "2025-10-31",
+      "completed": true,
+      "completedAt": "2025-10-31T23:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-6",
+      "date": "2025-10-31",
+      "completed": true,
+      "completedAt": "2025-10-31T16:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-7",
+      "date": "2025-10-31",
+      "completed": true,
+      "completedAt": "2025-10-31T11:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2025-12-31",
+      "completed": true,
+      "completedAt": "2025-12-31T10:00:00.000Z",
+      "note": "Last workout of the year!",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2025-12-31",
+      "completed": true,
+      "completedAt": "2025-12-31T22:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-3",
+      "date": "2025-12-31",
+      "completed": true,
+      "completedAt": "2025-12-31T08:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-4",
+      "date": "2025-12-31",
+      "completed": true,
+      "completedAt": "2025-12-31T19:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-5",
+      "date": "2025-12-31",
+      "completed": true,
+      "completedAt": "2025-12-31T23:45:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-6",
+      "date": "2025-12-31",
+      "completed": false,
+      "completionPercentage": 0
+    },
+    {
+      "habitId": "habit-7",
+      "date": "2025-12-31",
+      "completed": true,
+      "completedAt": "2025-12-31T12:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-1",
+      "date": "2026-01-01",
+      "completed": true,
+      "completedAt": "2026-01-01T09:00:00.000Z",
+      "note": "Starting strong in 2026!",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-2",
+      "date": "2026-01-01",
+      "completed": true,
+      "completedAt": "2026-01-01T20:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-3",
+      "date": "2026-01-01",
+      "completed": true,
+      "completedAt": "2026-01-01T07:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-4",
+      "date": "2026-01-01",
+      "completed": true,
+      "completedAt": "2026-01-01T18:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-5",
+      "date": "2026-01-01",
+      "completed": true,
+      "completedAt": "2026-01-01T22:30:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-6",
+      "date": "2026-01-01",
+      "completed": true,
+      "completedAt": "2026-01-01T15:00:00.000Z",
+      "completionPercentage": 100
+    },
+    {
+      "habitId": "habit-7",
+      "date": "2026-01-01",
+      "completed": true,
+      "completedAt": "2026-01-01T11:00:00.000Z",
+      "completionPercentage": 100
+    }
+  ],
+  "exportedAt": "2026-01-01T12:00:00.000Z"
+}
