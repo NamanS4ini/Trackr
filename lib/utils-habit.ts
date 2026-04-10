@@ -242,7 +242,11 @@ export function getMonthlyScores(habits: Habit[], entries: HabitEntry[], months:
 }
 
 export function getHabitCompletionData(habits: Habit[], entries: HabitEntry[], days: number = 30) {
-  const dates = getLast30Days();
+  const today = new Date();
+  const dates: string[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    dates.push(formatDate(subDays(today, i)));
+  }
   
   return habits.map((habit) => {
     const completions = dates.filter((date) => {

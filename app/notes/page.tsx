@@ -9,7 +9,7 @@ import AppLayout from '@/components/app-layout';
 import { storage } from '@/lib/storage';
 import { DayNote } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
-import { Calendar, FileText, ChevronRight, StickyNote } from 'lucide-react';
+import { FileText, ChevronRight, StickyNote } from 'lucide-react';
 
 interface DateWithNotes {
   date: string;

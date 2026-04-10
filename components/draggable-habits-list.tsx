@@ -34,13 +34,6 @@ interface DraggableHabitsListProps {
   showArchiveToggle?: boolean;
 }
 
-const PRIORITY_LABELS: Record<string, string> = {
-  low: 'Low',
-  medium: 'Medium',
-  high: 'High',
-  critical: 'Critical',
-};
-
 interface SortableHabitProps {
   habit: Habit;
   stats: HabitStats;

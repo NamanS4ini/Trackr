@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Trash2, GripVertical, Repeat } from 'lucide-react';
+import { Trash2, Repeat } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TaskListProps {

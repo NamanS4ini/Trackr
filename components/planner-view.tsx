@@ -172,7 +172,7 @@ export function PlannerView({
         <Card className="p-4 bg-blue-500/10 border-blue-500/20">
           <p className="text-sm text-blue-300">
             <strong>{standaloneTasksCount}</strong> standalone task{standaloneTasksCount !== 1 ? 's' : ''} 
-            {' '}(not linked to habits) won't affect your daily score
+            {' '}(not linked to habits) won&apos;t affect your daily score
           </p>
         </Card>
       )}

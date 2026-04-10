@@ -7,6 +7,7 @@ import { ChartFormatSettings } from '@/components/chart-format-settings';
 import { AddHabitDialog } from '@/components/add-habit-dialog';
 import { useHabits } from '@/components/habit-provider';
 import { calculateHabitStats } from '@/lib/utils-habit';
+import { HabitStats } from '@/lib/types';
 import AppLayout from '@/components/app-layout';
 import { Heart } from 'lucide-react';
 
@@ -37,7 +38,7 @@ export default function ManagePage() {
             stats={habits.reduce((acc, habit) => {
               acc[habit.id] = calculateHabitStats(habit, entries);
               return acc;
-            }, {} as Record<string, any>)}
+            }, {} as Record<string, HabitStats>)}
             onUpdate={updateHabit}
             onDelete={deleteHabit}
             onReorder={reorderHabits}
@@ -50,7 +51,7 @@ export default function ManagePage() {
           stats={habits.reduce((acc, habit) => {
             acc[habit.id] = calculateHabitStats(habit, entries);
             return acc;
-          }, {} as Record<string, any>)}
+          }, {} as Record<string, HabitStats>)}
           onUpdate={updateHabit}
           onDelete={deleteHabit}
         />

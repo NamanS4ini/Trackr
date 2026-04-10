@@ -3,26 +3,26 @@
 import { useHabits } from '@/components/habit-provider';
 import { PlannerView } from '@/components/planner-view';
 import { storage } from '@/lib/storage';
-import { getTomorrow } from '@/lib/utils-habit';
+import { getToday } from '@/lib/utils-habit';
 import { PlannedTask } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import AppLayout from '@/components/app-layout';
 
 export default function PlanPage() {
   const { habits, mounted } = useHabits();
-  const [selectedDate, setSelectedDate] = useState(getTomorrow());
+  const [selectedDate, setSelectedDate] = useState(getToday());
   const [tasks, setTasks] = useState<PlannedTask[]>([]);
+
+  const loadTasks = (date: string) => {
+    const dateTasks = storage.getPlannedTasksForDate(date);
+    setTasks(dateTasks);
+  };
 
   useEffect(() => {
     if (mounted) {
       loadTasks(selectedDate);
     }
   }, [mounted, selectedDate]);
-
-  const loadTasks = (date: string) => {
-    const dateTasks = storage.getPlannedTasksForDate(date);
-    setTasks(dateTasks);
-  };
 
   const handleAddTask = (task: PlannedTask) => {
     storage.addPlannedTask(task);

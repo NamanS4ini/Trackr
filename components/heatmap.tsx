@@ -41,7 +41,7 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
   const { heatmapData, maxScore } = useMemo(() => {
     let yearHabits = habits;
     let yearEntries = entries;
-    
+
     if (selectedYear !== currentYear) {
       const yearData = storage.getYearData(selectedYear);
       if (yearData) {
@@ -54,7 +54,7 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
     }
 
     const data: DayData[] = [];
-    
+
     // Generate dates for the entire year
     for (let month = 0; month < 12; month++) {
       const daysInMonth = new Date(selectedYear, month + 1, 0).getDate();
@@ -71,7 +71,7 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
     }
 
     const max = Math.max(...data.map(d => d.count), 1);
-    
+
     return { heatmapData: data, maxScore: max };
   }, [habits, entries, selectedYear, currentYear]);
 
@@ -91,12 +91,12 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
   const weeks: DayData[][] = useMemo(() => {
     const firstDay = new Date(selectedYear, 0, 1).getDay();
     const result: DayData[][] = [[]];
-    
+
     // Add empty days for the first week
     for (let i = 0; i < firstDay; i++) {
       result[0].push({ date: '', count: -1, month: -1, day: -1 });
     }
-    
+
     // Add all days
     heatmapData.forEach(day => {
       const currentWeek = result[result.length - 1];
@@ -106,13 +106,13 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
         currentWeek.push(day);
       }
     });
-    
+
     // Fill last week
     const lastWeek = result[result.length - 1];
     while (lastWeek.length < 7) {
       lastWeek.push({ date: '', count: -1, month: -1, day: -1 });
     }
-    
+
     return result;
   }, [heatmapData, selectedYear]);
 
@@ -153,13 +153,13 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
             {/* Month labels */}
             <div className="flex ml-8 mb-1">
               {months.map((month, idx) => {
-                const monthWeeks = weeks.filter(week => 
+                const monthWeeks = weeks.filter(week =>
                   week.some(day => day.month === idx)
                 );
                 const weekSpan = monthWeeks.length;
                 return weekSpan > 0 ? (
-                  <div 
-                    key={month} 
+                  <div
+                    key={month}
                     className="text-xs text-muted-foreground"
                     style={{ width: `${weekSpan * 14}px` }}
                   >
@@ -174,8 +174,8 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
               {/* Weekday labels */}
               <div className="flex flex-col gap-[3px] mr-2">
                 {weekdays.map((day, idx) => (
-                  <div 
-                    key={day} 
+                  <div
+                    key={day}
                     className="text-[10px] text-muted-foreground h-[11px] flex items-center"
                   >
                     {idx % 2 === 1 ? day : ''}
@@ -190,9 +190,8 @@ export function Heatmap({ habits, entries }: HeatmapProps) {
                     {week.map((day, dayIdx) => (
                       <div
                         key={`${weekIdx}-${dayIdx}`}
-                        className={`w-[11px] h-[11px] rounded-sm transition-all ${
-                          day.count >= 0 ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''
-                        }`}
+                        className={`w-[11px] h-[11px] rounded-sm transition-all ${day.count >= 0 ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''
+                          }`}
                         style={{
                           backgroundColor: day.count >= 0 ? getColor(day.count) : 'transparent',
                           border: day.count === -1 ? 'none' : day.count === 0 ? '1px solid #52525b' : 'none'
