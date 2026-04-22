@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Trash2, Repeat } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -13,7 +14,7 @@ interface TaskListProps {
   tasks: PlannedTask[];
   habits: Habit[];
   onToggleTask: (taskId: string) => void;
-  onDeleteTask: (taskId: string) => void;
+  onDeleteTask: (taskId: string, mode?: 'day-only' | 'all-future') => void;
   groupByHabit?: boolean;
   readOnly?: boolean;
   allowDelete?: boolean;
@@ -125,18 +126,26 @@ export function TaskList({
 interface TaskItemProps {
   task: PlannedTask;
   onToggle: (taskId: string) => void;
-  onDelete: (taskId: string) => void;
+  onDelete: (taskId: string, mode?: 'day-only' | 'all-future') => void;
   readOnly: boolean;
   allowDelete: boolean;
 }
 
 function TaskItem({ task, onToggle, onDelete, readOnly, allowDelete }: TaskItemProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      setIsDeleting(true);
-      onDelete(task.id);
+  const handleDeleteConfirm = (mode: 'day-only' | 'all-future' = 'day-only') => {
+    setIsDeleting(true);
+    onDelete(task.id, mode);
+    setIsPopoverOpen(false);
+  };
+
+  const handleDeleteClick = () => {
+    if (task.recurring) {
+      setIsPopoverOpen(true);
+    } else {
+      handleDeleteConfirm('day-only');
     }
   };
 
@@ -190,15 +199,49 @@ function TaskItem({ task, onToggle, onDelete, readOnly, allowDelete }: TaskItemP
               </Badge>
               
               {allowDelete && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleDelete}
-                  className="h-8 w-8 p-0 text-destructive"
-                  disabled={isDeleting}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleDeleteClick}
+                      className="h-8 w-8 p-0 text-destructive"
+                      disabled={isDeleting}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  {task.recurring && (
+                    <PopoverContent className="w-80">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <h4 className="font-semibold text-sm">Delete this recurring task?</h4>
+                          <p className="text-xs text-muted-foreground">
+                            This task repeats daily. How would you like to delete it?
+                          </p>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDeleteConfirm('day-only')}
+                            className="justify-start"
+                          >
+                            Delete for today only
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDeleteConfirm('all-future')}
+                            className="justify-start"
+                          >
+                            Delete all future occurrences
+                          </Button>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  )}
+                </Popover>
               )}
             </div>
           </div>

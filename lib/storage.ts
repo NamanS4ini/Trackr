@@ -496,31 +496,48 @@ export const storage = {
     }
   },
 
-  deletePlannedTask: (id: string): void => {
+  deletePlannedTask: (id: string, mode: 'day-only' | 'all-future' = 'day-only'): void => {
     const tasks = storage.getPlannedTasks();
     const task = tasks.find((t) => t.id === id);
-    const filtered = tasks.filter((t) => t.id !== id);
-    storage.savePlannedTasks(filtered);
 
-    if (task?.recurring) {
-      const recurringIdentity = getRecurringTaskIdentity(task);
-      const recurringTaskSkips = storage.getRecurringTaskSkips();
-      const alreadySkipped = recurringTaskSkips.some(
-        (skip) =>
-          skip.date === task.date && skip.identity === recurringIdentity,
+    if (!task) return;
+
+    if (task.recurring && mode === 'all-future') {
+      // Delete all future occurrences of this recurring task
+      const filtered = tasks.filter(
+        (t) =>
+          !(t.title === task.title &&
+            t.habitId === task.habitId &&
+            t.recurring &&
+            t.date >= task.date),
       );
+      storage.savePlannedTasks(filtered);
+    } else {
+      // Delete just this specific task
+      const filtered = tasks.filter((t) => t.id !== id);
+      storage.savePlannedTasks(filtered);
 
-      if (!alreadySkipped) {
-        recurringTaskSkips.push({
-          date: task.date,
-          identity: recurringIdentity,
-        });
-        storage.saveRecurringTaskSkips(recurringTaskSkips);
+      // If recurring, skip this date so it doesn't auto-copy tomorrow
+      if (task.recurring) {
+        const recurringIdentity = getRecurringTaskIdentity(task);
+        const recurringTaskSkips = storage.getRecurringTaskSkips();
+        const alreadySkipped = recurringTaskSkips.some(
+          (skip) =>
+            skip.date === task.date && skip.identity === recurringIdentity,
+        );
+
+        if (!alreadySkipped) {
+          recurringTaskSkips.push({
+            date: task.date,
+            identity: recurringIdentity,
+          });
+          storage.saveRecurringTaskSkips(recurringTaskSkips);
+        }
       }
     }
 
     // Update entry completion percentage if task belonged to a habit
-    if (task?.habitId) {
+    if (task.habitId) {
       storage.recalculateHabitCompletion(task.habitId, task.date);
     }
   },

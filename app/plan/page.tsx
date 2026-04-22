@@ -34,8 +34,8 @@ export default function PlanPage() {
     loadTasks(selectedDate);
   };
 
-  const handleDeleteTask = (taskId: string) => {
-    storage.deletePlannedTask(taskId);
+  const handleDeleteTask = (taskId: string, mode: 'day-only' | 'all-future' = 'day-only') => {
+    storage.deletePlannedTask(taskId, mode);
     loadTasks(selectedDate);
   };
 
