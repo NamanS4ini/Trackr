@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ConfirmationPopover } from '@/components/ui/confirmation-popover';
 import { Habit, HabitStats } from '@/lib/types';
 import { Pencil, Trash2, Archive, ArchiveRestore } from 'lucide-react';
 import { EditHabitDialog } from './edit-habit-dialog';
@@ -96,19 +97,18 @@ export function HabitCard({ habit, stats, onUpdate, onDelete }: HabitCardProps) 
                 </>
               )}
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                if (confirm('Are you sure you want to delete this habit? This cannot be undone.')) {
-                  onDelete(habit.id);
-                }
-              }}
-              className="gap-1 text-destructive"
-            >
-              <Trash2 className="h-3 w-3" />
-              Delete
-            </Button>
+            <ConfirmationPopover
+              trigger={
+                <Button variant="outline" size="sm" className="gap-1 text-destructive">
+                  <Trash2 className="h-3 w-3" />
+                  Delete
+                </Button>
+              }
+              title="Delete this habit?"
+              description="This cannot be undone."
+              confirmLabel="Delete"
+              onConfirm={() => onDelete(habit.id)}
+            />
           </div>
         </CardContent>
       </Card>

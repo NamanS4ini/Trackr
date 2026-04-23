@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ConfirmationPopover } from '@/components/ui/confirmation-popover';
 import { Archive, ArchiveRestore, Trash2 } from 'lucide-react';
 import { PRIORITY_COLORS, PRIORITY_VALUES } from '@/lib/types';
 
@@ -29,12 +30,6 @@ export function ArchivedHabitsDialog({ habits, stats, onUpdate, onDelete }: Arch
 
   const handleUnarchive = (habitId: string) => {
     onUpdate(habitId, { archived: false });
-  };
-
-  const handleDelete = (habitId: string) => {
-    if (confirm('Are you sure you want to permanently delete this habit?')) {
-      onDelete(habitId);
-    }
   };
 
   return (
@@ -115,15 +110,22 @@ export function ArchivedHabitsDialog({ habits, stats, onUpdate, onDelete }: Arch
                         >
                           <ArchiveRestore className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(habit.id)}
-                          className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-                          title="Delete permanently"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <ConfirmationPopover
+                          trigger={
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+                              title="Delete permanently"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          }
+                          title="Delete permanently?"
+                          description="This archived habit will be removed for good."
+                          confirmLabel="Delete"
+                          onConfirm={() => onDelete(habit.id)}
+                        />
                       </div>
                     </div>
                   </CardContent>

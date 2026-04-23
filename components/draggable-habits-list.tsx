@@ -21,6 +21,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ConfirmationPopover } from '@/components/ui/confirmation-popover';
 import { Habit, HabitStats, PRIORITY_COLORS, PRIORITY_VALUES } from '@/lib/types';
 import { Pencil, Trash2, Archive, ArchiveRestore, GripVertical } from 'lucide-react';
 import { EditHabitDialog } from './edit-habit-dialog';
@@ -145,18 +146,21 @@ function SortableHabit({ habit, stats, onUpdate, onDelete, showArchiveToggle = t
                   )}
                 </Button>
               )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  if (confirm('Are you sure you want to delete this habit? This cannot be undone.')) {
-                    onDelete(habit.id);
-                  }
-                }}
-                className="h-7 w-7 p-0 text-destructive hover:text-destructive"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
+              <ConfirmationPopover
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                }
+                title="Delete this habit?"
+                description="This cannot be undone."
+                confirmLabel="Delete"
+                onConfirm={() => onDelete(habit.id)}
+              />
             </div>
           </div>
         </CardContent>

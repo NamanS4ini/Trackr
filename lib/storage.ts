@@ -496,20 +496,25 @@ export const storage = {
     }
   },
 
-  deletePlannedTask: (id: string, mode: 'day-only' | 'all-future' = 'day-only'): void => {
+  deletePlannedTask: (
+    id: string,
+    mode: "day-only" | "all-future" = "day-only",
+  ): void => {
     const tasks = storage.getPlannedTasks();
     const task = tasks.find((t) => t.id === id);
 
     if (!task) return;
 
-    if (task.recurring && mode === 'all-future') {
+    if (task.recurring && mode === "all-future") {
       // Delete all future occurrences of this recurring task
       const filtered = tasks.filter(
         (t) =>
-          !(t.title === task.title &&
+          !(
+            t.title === task.title &&
             t.habitId === task.habitId &&
             t.recurring &&
-            t.date >= task.date),
+            t.date >= task.date
+          ),
       );
       storage.savePlannedTasks(filtered);
     } else {

@@ -20,10 +20,10 @@ interface TaskListProps {
   allowDelete?: boolean;
 }
 
-export function TaskList({ 
-  tasks, 
-  habits, 
-  onToggleTask, 
+export function TaskList({
+  tasks,
+  habits,
+  onToggleTask,
   onDeleteTask,
   groupByHabit = true,
   readOnly = false,
@@ -40,7 +40,7 @@ export function TaskList({
   if (groupByHabit) {
     // Group tasks by habit
     const tasksByHabit = new Map<string | undefined, PlannedTask[]>();
-    
+
     tasks.forEach(task => {
       const key = task.habitId || 'standalone';
       if (!tasksByHabit.has(key)) {
@@ -52,7 +52,7 @@ export function TaskList({
     return (
       <div className="space-y-6">
         {Array.from(tasksByHabit.entries()).map(([habitKey, habitTasks]) => {
-          const habit = habitKey !== 'standalone' 
+          const habit = habitKey !== 'standalone'
             ? habits.find(h => h.id === habitKey)
             : null;
 
@@ -86,7 +86,7 @@ export function TaskList({
                   </Badge>
                 </div>
               )}
-              
+
               <div className="space-y-2 ml-7">
                 {habitTasks.map(task => (
                   <TaskItem
@@ -162,7 +162,7 @@ function TaskItem({ task, onToggle, onDelete, readOnly, allowDelete }: TaskItemP
           disabled={readOnly}
           className="mt-1 shrink-0"
         />
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-2">
             <div className="flex-1 w-full">
@@ -184,7 +184,7 @@ function TaskItem({ task, onToggle, onDelete, readOnly, allowDelete }: TaskItemP
                 </p>
               )}
             </div>
-            
+
             <div className="flex items-center gap-2 shrink-0">
               <Badge
                 variant="secondary"
@@ -197,7 +197,7 @@ function TaskItem({ task, onToggle, onDelete, readOnly, allowDelete }: TaskItemP
               >
                 {task.priority}
               </Badge>
-              
+
               {allowDelete && (
                 <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                   <PopoverTrigger asChild>

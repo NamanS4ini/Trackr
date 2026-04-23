@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, Upload } from 'lucide-react';
 import { storage } from '@/lib/storage';
 import { ArchivedHabitsDialog } from './archived-habits-dialog';
+import { ConfirmationPopover } from '@/components/ui/confirmation-popover';
 import { Habit, HabitStats } from '@/lib/types';
 
 interface DataManagementProps {
@@ -45,10 +46,8 @@ export function DataManagement({ habits = [], stats = {}, onUpdate = () => {}, o
         const data = JSON.parse(text);
         
         if (data.habits && data.entries) {
-          if (confirm('This will replace all your current data. Are you sure?')) {
-            storage.importData(data);
-            window.location.reload();
-          }
+          storage.importData(data);
+          window.location.reload();
         } else {
           alert('Invalid backup file format');
         }
@@ -74,10 +73,23 @@ export function DataManagement({ habits = [], stats = {}, onUpdate = () => {}, o
               <Download className="h-4 w-4" />
               Export Data
             </Button>
-            <Button onClick={handleImport} variant="outline" className="gap-2 w-full sm:w-auto text-sm" disabled={importing}>
-              <Upload className="h-4 w-4" />
-              {importing ? 'Importing...' : 'Import Data'}
-            </Button>
+            <ConfirmationPopover
+              trigger={
+                <Button
+                  variant="outline"
+                  className="gap-2 w-full sm:w-auto text-sm"
+                  disabled={importing}
+                >
+                  <Upload className="h-4 w-4" />
+                  {importing ? 'Importing...' : 'Import Data'}
+                </Button>
+              }
+              title="Replace all current data?"
+              description="This will overwrite your habits, entries, and settings."
+              confirmLabel="Continue"
+              onConfirm={handleImport}
+              className="w-96"
+            />
           </div>
           <div>
             <ArchivedHabitsDialog 
