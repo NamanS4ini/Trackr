@@ -16,7 +16,7 @@ interface DataManagementProps {
   onDelete?: (id: string) => void;
 }
 
-export function DataManagement({ habits = [], stats = {}, onUpdate = () => {}, onDelete = () => {} }: DataManagementProps) {
+export function DataManagement({ habits = [], stats = {}, onUpdate = () => { }, onDelete = () => { } }: DataManagementProps) {
   const [importing, setImporting] = useState(false);
 
   const handleExport = () => {
@@ -44,7 +44,7 @@ export function DataManagement({ habits = [], stats = {}, onUpdate = () => {}, o
         setImporting(true);
         const text = await file.text();
         const data = JSON.parse(text);
-        
+
         if (data.habits && data.entries) {
           storage.importData(data);
           window.location.reload();
@@ -92,7 +92,7 @@ export function DataManagement({ habits = [], stats = {}, onUpdate = () => {}, o
             />
           </div>
           <div>
-            <ArchivedHabitsDialog 
+            <ArchivedHabitsDialog
               habits={habits}
               stats={stats}
               onUpdate={onUpdate}

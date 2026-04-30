@@ -66,9 +66,9 @@ function SortableHabit({ habit, stats, onUpdate, onDelete, showArchiveToggle = t
 
   return (
     <>
-      <Card 
-        ref={setNodeRef} 
-        style={style} 
+      <Card
+        ref={setNodeRef}
+        style={style}
         className="relative overflow-hidden border-zinc-800 hover:bg-zinc-900/30 transition-colors"
       >
         <div
@@ -84,14 +84,14 @@ function SortableHabit({ habit, stats, onUpdate, onDelete, showArchiveToggle = t
             >
               <GripVertical className="h-4 w-4" />
             </button>
-            
+
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-sm sm:text-base font-medium">{habit.name}</h3>
-                <Badge 
-                  variant="outline" 
+                <Badge
+                  variant="outline"
                   className="text-xs px-2 py-0.5 h-5"
-                  style={{ 
+                  style={{
                     borderColor: PRIORITY_COLORS[habit.priority],
                     color: PRIORITY_COLORS[habit.priority]
                   }}

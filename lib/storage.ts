@@ -462,18 +462,47 @@ export const storage = {
     }
   },
 
-  updatePlannedTask: (id: string, updates: Partial<PlannedTask>): void => {
+  updatePlannedTask: (
+    id: string,
+    updates: Partial<PlannedTask>,
+    mode: 'day-only' | 'all-future' = 'day-only',
+  ): void => {
     const tasks = storage.getPlannedTasks();
     const index = tasks.findIndex((t) => t.id === id);
-    if (index !== -1) {
-      tasks[index] = { ...tasks[index], ...updates };
-      storage.savePlannedTasks(tasks);
+    if (index === -1) return;
 
-      // Update entry completion percentage if task belongs to a habit
-      const task = tasks[index];
-      if (task.habitId) {
-        storage.recalculateHabitCompletion(task.habitId, task.date);
+    const task = tasks[index];
+
+    if (task.recurring && mode === 'all-future') {
+      // Update all future occurrences (including this date)
+      const updated = tasks.map((t) => {
+        if (
+          t.title === task.title &&
+          t.habitId === task.habitId &&
+          t.recurring &&
+          t.date >= task.date
+        ) {
+          return { ...t, ...updates };
+        }
+        return t;
+      });
+      storage.savePlannedTasks(updated);
+    } else {
+      // Update only this specific task
+      // If the original task was recurring but the update is day-only,
+      // ensure this instance is converted to a non-recurring exception.
+      if (task.recurring && mode === 'day-only') {
+        tasks[index] = { ...tasks[index], ...updates, recurring: false };
+      } else {
+        tasks[index] = { ...tasks[index], ...updates };
       }
+      storage.savePlannedTasks(tasks);
+    }
+
+    // Update entry completion percentage if task belongs to a habit
+    const affectedTask = tasks.find((t) => t.id === id) || task;
+    if (affectedTask?.habitId) {
+      storage.recalculateHabitCompletion(affectedTask.habitId, affectedTask.date);
     }
   },
 

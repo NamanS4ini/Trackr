@@ -17,6 +17,7 @@ interface PlannerViewProps {
   onAddTask: (task: PlannedTask) => void;
   onToggleTask: (taskId: string) => void;
   onDeleteTask: (taskId: string) => void;
+  onEditTask?: (taskId: string, updates: Partial<PlannedTask>, mode?: 'day-only' | 'all-future') => void;
   onDateChange: (date: string) => void;
 }
 
@@ -27,6 +28,7 @@ export function PlannerView({
   onAddTask,
   onToggleTask,
   onDeleteTask,
+  onEditTask,
   onDateChange,
 }: PlannerViewProps) {
   const [selectedDate, setSelectedDate] = useState(initialDate);
@@ -161,6 +163,7 @@ export function PlannerView({
           habits={habits}
           onToggleTask={onToggleTask}
           onDeleteTask={onDeleteTask}
+          onEditTask={onEditTask ?? (() => {})}
           groupByHabit={true}
           readOnly={!isToday}
           allowDelete={true}

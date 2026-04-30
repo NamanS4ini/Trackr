@@ -39,6 +39,11 @@ export default function PlanPage() {
     loadTasks(selectedDate);
   };
 
+  const handleEditTask = (taskId: string, updates: Partial<PlannedTask>, mode: 'day-only' | 'all-future' = 'day-only') => {
+    storage.updatePlannedTask(taskId, updates, mode);
+    loadTasks(selectedDate);
+  };
+
   const handleDateChange = (date: string) => {
     setSelectedDate(date);
   };
@@ -70,6 +75,7 @@ export default function PlanPage() {
           onAddTask={handleAddTask}
           onToggleTask={handleToggleTask}
           onDeleteTask={handleDeleteTask}
+          onEditTask={handleEditTask}
           onDateChange={handleDateChange}
         />
       </div>

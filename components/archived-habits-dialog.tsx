@@ -47,7 +47,7 @@ export function ArchivedHabitsDialog({ habits, stats, onUpdate, onDelete }: Arch
             Restore or permanently delete archived habits
           </DialogDescription>
         </DialogHeader>
-        
+
         {archivedHabits.length === 0 ? (
           <div className="py-8 text-center text-muted-foreground">
             No archived habits
@@ -67,10 +67,10 @@ export function ArchivedHabitsDialog({ habits, stats, onUpdate, onDelete }: Arch
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-base font-medium">{habit.name}</h3>
-                          <Badge 
-                            variant="outline" 
+                          <Badge
+                            variant="outline"
                             className="text-xs px-2 py-0.5 h-5"
-                            style={{ 
+                            style={{
                               borderColor: PRIORITY_COLORS[habit.priority],
                               color: PRIORITY_COLORS[habit.priority]
                             }}
