@@ -77,12 +77,12 @@ export function PlannerView({
     .reduce((score, task) => {
       const habit = habits.find(h => h.id === task.habitId);
       if (!habit) return score;
-      
+
       // Calculate what percentage this task contributes to the habit
       const habitTasks = tasks.filter(t => t.habitId === task.habitId);
       const taskWeight = 1 / habitTasks.length;
       const habitPoints = { low: 1, medium: 2, high: 3, critical: 5 }[habit.priority];
-      
+
       return score + (habitPoints * taskWeight);
     }, 0);
 
@@ -163,7 +163,7 @@ export function PlannerView({
           habits={habits}
           onToggleTask={onToggleTask}
           onDeleteTask={onDeleteTask}
-          onEditTask={onEditTask ?? (() => {})}
+          onEditTask={onEditTask ?? (() => { })}
           groupByHabit={true}
           readOnly={!isToday}
           allowDelete={true}
@@ -174,7 +174,7 @@ export function PlannerView({
       {standaloneTasksCount > 0 && (
         <Card className="p-4 bg-blue-500/10 border-blue-500/20">
           <p className="text-sm text-blue-300">
-            <strong>{standaloneTasksCount}</strong> standalone task{standaloneTasksCount !== 1 ? 's' : ''} 
+            <strong>{standaloneTasksCount}</strong> standalone task{standaloneTasksCount !== 1 ? 's' : ''}
             {' '}(not linked to habits) won&apos;t affect your daily score
           </p>
         </Card>

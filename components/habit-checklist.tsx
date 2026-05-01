@@ -94,7 +94,7 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
     const entry = getEntry(habitId);
     const note = notes[habitId];
     onToggle(habitId, date, note);
-    
+
     if (!entry?.completed) {
       setNotes((prev) => ({ ...prev, [habitId]: '' }));
       setExpandedNotes((prev) => {
@@ -233,11 +233,10 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
             const completedTasksCount = habitTasks.filter(t => t.completed).length;
 
             return (
-              <Card 
-                key={habit.id} 
-                className={`border-zinc-800 transition-all ${
-                  isCompleted ? 'bg-zinc-900/50' : 'hover:bg-zinc-900/30'
-                } ${!hasTasks || hasTasks ? 'cursor-pointer' : ''}`}
+              <Card
+                key={habit.id}
+                className={`border-zinc-800 transition-all ${isCompleted ? 'bg-zinc-900/50' : 'hover:bg-zinc-900/30'
+                  } ${!hasTasks || hasTasks ? 'cursor-pointer' : ''}`}
                 onClick={() => {
                   if (!hasTasks) {
                     handleToggle(habit.id);
@@ -251,13 +250,12 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                     <button
                       onClick={() => !hasTasks && handleToggle(habit.id)}
                       disabled={hasTasks}
-                      className={`shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                        hasTasks 
+                      className={`shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${hasTasks
                           ? 'border-zinc-700 cursor-not-allowed opacity-50'
                           : isCompleted
-                          ? 'bg-blue-500 border-blue-500'
-                          : 'border-zinc-700 hover:border-zinc-500'
-                      }`}
+                            ? 'bg-blue-500 border-blue-500'
+                            : 'border-zinc-700 hover:border-zinc-500'
+                        }`}
                       style={{
                         backgroundColor: isCompleted && !hasTasks ? habit.color : 'transparent',
                         borderColor: isCompleted && !hasTasks ? habit.color : undefined,
@@ -266,16 +264,16 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                     >
                       {isCompleted && <Check className="h-3 w-3 text-white" />}
                     </button>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
                         <h3 className={`text-sm font-medium ${isCompleted ? 'text-zinc-400' : 'text-zinc-100'}`}>
                           {habit.name}
                         </h3>
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className="text-xs px-1.5 py-0 h-4"
-                          style={{ 
+                          style={{
                             borderColor: PRIORITY_COLORS[habit.priority],
                             color: PRIORITY_COLORS[habit.priority]
                           }}
@@ -312,7 +310,7 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                         <ListTodo className="h-3 w-3" />
                       </Button>
                     )}
-                    
+
                     <Button
                       variant={hasNote || showNote ? 'secondary' : 'ghost'}
                       size="sm"
@@ -329,8 +327,8 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                   {showTasks && hasTasks && (
                     <div className="mt-2 pl-7 space-y-1.5" onClick={(e) => e.stopPropagation()}>
                       {habitTasks.map(task => (
-                        <div 
-                          key={task.id} 
+                        <div
+                          key={task.id}
                           className={`flex items-start gap-2 p-2 bg-zinc-900 border border-zinc-800 rounded ${!isPastDay ? 'cursor-pointer hover:bg-zinc-800/50' : ''} transition-colors`}
                           onClick={() => !isPastDay && handleToggleTask(task.id)}
                         >

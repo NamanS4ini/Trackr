@@ -2,6 +2,21 @@
 
 A modern, feature-rich habit tracking application built with Next.js 16. Track habits, plan tasks, visualize progress, and achieve your goals with a sophisticated priority-based scoring system.
 
+## Recent Updates (May 1, 2026)
+
+- Default planner date now opens to today's date (previously defaulted to tomorrow).
+- Reworked recurring task handling:
+   - Deleting a recurring task now offers a popover choice to delete "this day only" or "all future occurrences" and persists the choice so deleted instances don't reappear.
+   - Editing a recurring task supports editing "this date only" (creates a non-recurring exception for that day) or "all future occurrences".
+- Replaced native browser `confirm()`/`alert()` dialogs across the app with an accessible shadcn/Radix popover confirmation component for consistent UX.
+- Added a shared `ConfirmationPopover` component and the `EditTaskDialog` to support editing flows and choices for recurring tasks.
+- UI tweak: action buttons (edit/delete) now show a pointer cursor for clearer affordance.
+- Storage API changes: `deletePlannedTask(id, mode)` and `updatePlannedTask(id, updates, mode)` support mode-aware operations (`day-only | all-future`).
+- Accessibility: Dialogs updated with `DialogDescription` text where missing to ensure proper aria-describedby usage.
+- Lint and build: codebase linting and production build pass after changes.
+
+See the "Task Planning System" and "Recurring Tasks" sections below for details and examples.
+
 ## Features
 
 ### Core Functionality

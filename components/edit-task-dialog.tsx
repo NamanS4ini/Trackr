@@ -67,9 +67,9 @@ export function EditTaskDialog({ task, habits, open, onOpenChange, onSave, mode 
       <DialogContent className="sm:max-w-[500px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-              <DialogTitle>Edit Task</DialogTitle>
-              <DialogDescription>Update task details. For recurring tasks choose whether to apply changes to this date only or to all future occurrences.</DialogDescription>
-            </DialogHeader>
+            <DialogTitle>Edit Task</DialogTitle>
+            <DialogDescription>Update task details. For recurring tasks choose whether to apply changes to this date only or to all future occurrences.</DialogDescription>
+          </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="title">Task Title *</Label>

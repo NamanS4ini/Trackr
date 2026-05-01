@@ -160,7 +160,7 @@ function TaskItem({ task, habits, onToggle, onDelete, onEdit, readOnly, allowDel
                 <div className="flex items-center gap-2">
                   {task.recurring ? (
                     <Popover open={editChoiceOpen} onOpenChange={setEditChoiceOpen}>
-                        <PopoverTrigger asChild>
+                      <PopoverTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0 cursor-pointer" title="Edit task">
                           <Pencil className="w-4 h-4" />
                         </Button>
@@ -176,7 +176,7 @@ function TaskItem({ task, habits, onToggle, onDelete, onEdit, readOnly, allowDel
                         </div>
                       </PopoverContent>
                     </Popover>
-                    ) : (
+                  ) : (
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0 cursor-pointer" onClick={() => openEdit('day-only')} title="Edit task">
                       <Pencil className="w-4 h-4" />
                     </Button>
