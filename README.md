@@ -1,280 +1,262 @@
-# Trackr - Advanced Habit Tracker
+# Trackr
 
-A modern, feature-rich habit tracking application built with Next.js 16. Track habits, plan tasks, visualize progress, and achieve your goals with a sophisticated priority-based scoring system.
+Trackr is a client-side habit tracking and task planning app built with Next.js 16. It combines daily habit completion, weighted task planning, recurring task management, notes, and analytics in one local-first dashboard.
 
-## Recent Updates (May 1, 2026)
+## Overview
 
-- Default planner date now opens to today's date (previously defaulted to tomorrow).
-- Reworked recurring task handling:
-   - Deleting a recurring task now offers a popover choice to delete "this day only" or "all future occurrences" and persists the choice so deleted instances don't reappear.
-   - Editing a recurring task supports editing "this date only" (creates a non-recurring exception for that day) or "all future occurrences".
-- Replaced native browser `confirm()`/`alert()` dialogs across the app with an accessible shadcn/Radix popover confirmation component for consistent UX.
-- Added a shared `ConfirmationPopover` component and the `EditTaskDialog` to support editing flows and choices for recurring tasks.
-- UI tweak: action buttons (edit/delete) now show a pointer cursor for clearer affordance.
-- Storage API changes: `deletePlannedTask(id, mode)` and `updatePlannedTask(id, updates, mode)` support mode-aware operations (`day-only | all-future`).
-- Accessibility: Dialogs updated with `DialogDescription` text where missing to ensure proper aria-describedby usage.
-- Lint and build: codebase linting and production build pass after changes.
+Trackr is designed for people who want one place to manage habits, plan the day, record notes, and review progress over time. Everything runs in the browser with `localStorage`, so no backend or account is required.
 
-See the "Task Planning System" and "Recurring Tasks" sections below for details and examples.
+## What’s In The App
 
-## Features
+- Habit management with create, edit, archive, delete, reorder, and restore flows
+- Daily tracking with habit cards, task breakdowns, and completion scoring
+- Task planning with future-date support and recurring task propagation
+- Recurring task editing and deletion choices for day-only or all-future changes
+- Dashboard analytics with charts, stats, and a year heatmap calendar
+- Daily notes and habit-specific notes
+- Export/import data management for backups and migration
+- Year archive support for historical data snapshots
 
-### Core Functionality
-- **Habit Management**: Create, edit, archive, and delete habits with customizable colors and descriptions
-- **Priority System**: Four-tier priority system (Low, Medium, High, Critical) for habits and tasks
-- **Daily Tracking**: Interactive habit checklist with one-click completion
-- **Task-Based Planning**: Break down habits into actionable daily tasks
-- **Local Storage**: All data persists locally in your browser - no account required
+## Routes
 
-### Task Planning System
-- **Daily Task Planner**: Plan tomorrow's work today with the dedicated planning interface
-- **Habit Linking**: Associate tasks with specific habits or create standalone tasks
-- **Task Priorities**: Assign individual priorities to tasks for weighted scoring
-- **Recurring Tasks**: Automatically propagate tasks to the next day
-- **Weighted Scoring**: Task completion contributes proportionally to habit scores based on task priority
-- **Permission Controls**: Future dates are read-only for completion but allow task deletion
-- **Smart Completion**: Habits with tasks auto-complete when all tasks are done
+- `/` - landing page
+- `/dashboard` - stats, charts, and yearly heatmap visualization
+- `/manage` - habit management and data controls
+- `/track` - daily habit tracking view
+- `/plan` - task planner
+- `/notes` - notes archive
+- `/notes/[date]` - detailed notes view for a specific day
 
-### Priority-Based Scoring
-- **Low Priority**: 1 point
-- **Medium Priority**: 2 points
-- **High Priority**: 3 points
-- **Critical Priority**: 5 points
+## Core Features
 
-**Scoring Algorithm:**
-- Habits without tasks: Full points when completed
-- Habits with tasks: Weighted score based on task priority completion
-  - Example: Medium habit (3 pts) with 2 medium tasks
-    - Completing 1 task: 50% completion = 1.5 pts
-    - Completing both: 100% completion = 3 pts
-  - Task weights are calculated using: (Task Priority × Habit Priority) / Total Task Priority Weight
+### Habit Management
 
-### Analytics & Visualizations
-- **Stats Overview**: Real-time daily score, completion rate, total habits, and all-time completions
-- **Weekly Progress Chart**: Line chart showing score trends over 8 weeks
-- **Weekly Scores Bar Chart**: Bar chart displaying weekly performance comparison
-- **Activity Heatmap**: 12-Month color-coded visualization of daily activity intensity
-- **Habit Statistics**: Current streak, longest streak, total completions, and completion rate per habit
-- **Task Metrics**: Task completion tracking with weighted score contributions
+- Create habits with a title, optional description, color, and priority
+- Edit habit details later
+- Archive habits instead of deleting them immediately
+- Restore archived habits when needed
+- Permanently delete habits and their related data
+- Reorder habits in the manage view with drag and drop
 
-### Notes System
-- **Daily Notes**: Capture thoughts, reflections, or important events for each day
-- **Habit Notes**: Add context-specific notes to individual habit completions
-- **Notes Archive**: Browse all daily notes organized chronologically
-- **Detailed View**: Click any date to see daily note plus all habit-specific notes
-- **Read-Only Protection**: Past entries are locked to prevent accidental modifications
-- **Markdown Support**: Rich text formatting in note fields
+### Daily Tracking
 
-### User Experience
-- **One-Click Interaction**: Click anywhere on habit cards to toggle completion (habits without tasks) or expand task lists
-- **Task Row Clicking**: Click anywhere on a task to toggle completion - no need to hunt for checkboxes
-- **Color Coding**: Visual habit identification with customizable color palette
-- **Archive System**: Hide completed habits without losing historical data
-- **Data Portability**: Export and import data as JSON for backups or migration
-- **Responsive Design**: Fully optimized for desktop, tablet, and mobile devices
-- **Dark Mode**: Eye-friendly dark theme throughout the application
-- **Drag & Drop**: Reorder habits in the manage view (coming soon)
-- **Automatic Year Archiving**: Year-end data archiving for clean yearly tracking
+- Mark habits complete from the track page
+- View expanded task lists for habits with subtasks
+- Track weighted completion rather than simple binary progress
+- Add daily notes for context, reflections, or reminders
+- Lock past entries for read-only safety where appropriate
+
+### Task Planning
+
+- Plan tasks for today or any future date
+- Attach a task to a habit or keep it standalone
+- Assign task priority levels for weighted scoring
+- Enable recurring tasks that propagate to the next day
+- Edit a task for just one day or for all future occurrences
+- Delete a task for just one day or for all future occurrences
+- Use popover confirmations instead of native browser alerts
+
+### Analytics And Visualizations
+
+- Stats cards for daily score, completion rate, total habits, and all-time completions
+- Weekly score trend chart
+- Weekly comparison bar chart
+- Year heatmap calendar with score-based coloring
+- Month-by-month horizontal calendar layout
+- Year switching based on tracked data
+- Color intensity from inactive days to highly productive days
+
+### Notes
+
+- Add notes for a specific date
+- Add habit-specific notes alongside daily notes
+- Browse all notes chronologically
+- Open a date-specific detail view for deeper context
+
+### Data Management
+
+- Export all app data as JSON
+- Import a backup JSON file
+- Review archived years
+- Keep all user data local to the browser
+
+## Scoring Model
+
+Trackr uses weighted scoring so that task completion affects habit completion more realistically.
+
+- Habit priority levels: Low, Medium, High, Critical
+- Task priority levels: Low, Medium, High, Critical
+- Completion is calculated from the sum of task weights completed versus total task weight
+- Habits without tasks behave like simple completed/incomplete items
+- Habits with tasks auto-complete once all tasks are done
+
+## Calendar Heatmap Behavior
+
+- The heatmap shows one year at a time
+- It starts on the current year after refresh
+- The current month is scrolled into view on load
+- January through June open from the start of the horizontal month list
+- July through December open from the end
+- The current year only shows days up to today; future days render as empty boxes
+- Earlier years render the full year
 
 ## Technology Stack
 
-- **Framework**: Next.js 16.1.1 with App Router and Turbopack
-- **Runtime**: React 19.2.3
-- **Language**: TypeScript 5
-- **UI Components**: Radix UI (Dialog, Select, Checkbox) + Custom ShadCN Components
-- **Charts & Visualizations**: Recharts
-- **Styling**: Tailwind CSS with custom dark theme
-- **Icons**: Lucide React
-- **Date Management**: date-fns
-- **State Management**: React Context API (HabitProvider)
-- **Data Persistence**: Browser localStorage
+- Next.js 16.2.3
+- React 19.2.3
+- TypeScript 5
+- Tailwind CSS 4
+- Radix UI primitives
+- Recharts
+- date-fns
+- dnd-kit
+- Lucide React
+- Framer Motion
+- Vercel Analytics
+- Browser `localStorage` for persistence
 
-## Getting Started
+## Key Libraries And UI Pieces
 
-### Installation
+- `@radix-ui/react-dialog`
+- `@radix-ui/react-popover`
+- `@radix-ui/react-select`
+- `@radix-ui/react-checkbox`
+- `@radix-ui/react-tabs`
+- `@dnd-kit/core`
+- `@dnd-kit/sortable`
+- `@dnd-kit/utilities`
+- `recharts`
+- `cal-heatmap`
+- `react-calendar-heatmap`
+
+## Project Structure
+
+```text
+app/
+  layout.tsx                Root app layout
+  globals.css               Global styles
+  page.tsx                  Landing page
+  dashboard/page.tsx        Analytics dashboard
+  manage/page.tsx           Habit management page
+  notes/page.tsx            Notes archive
+  notes/[date]/page.tsx     Notes detail view
+  plan/page.tsx             Task planner page
+  track/page.tsx            Habit tracking page
+
+components/
+  app-layout.tsx            Shared app shell
+  navigation.tsx            Main navigation
+  habit-provider.tsx        Global habit state/context
+  habits-manager.tsx        Manage view logic
+  habit-card.tsx            Habit card UI
+  habit-checklist.tsx       Track view checklist UI
+  task-list.tsx             Planner task list and edit/delete actions
+  planner-view.tsx          Planner page UI
+  add-habit-dialog.tsx      Habit creation dialog
+  edit-habit-dialog.tsx     Habit edit dialog
+  add-task-dialog.tsx       Task creation dialog
+  edit-task-dialog.tsx      Task edit dialog
+  archived-habits-dialog.tsx Archived habit restore/delete dialog
+  confirmation-popover.tsx  Reusable confirmation popover
+  data-management.tsx       Import/export controls
+  dashboard-charts.tsx      Dashboard charts container
+  stats-overview.tsx        Summary cards
+  streak-card.tsx           Habit streak display
+  heatmap.tsx               Legacy heatmap component
+  yearly-overview.tsx       Legacy yearly overview view
+  year-heatmap.tsx          Current year heatmap calendar
+  start-page-settings.tsx   Landing page settings UI
+  chart-format-settings.tsx Chart display controls
+  day-note-card.tsx         Notes card UI
+  draggable-habits-list.tsx Drag-and-drop habit list
+  ui/                       Shared shadcn-style UI components
+    button.tsx
+    card.tsx
+    dialog.tsx
+    input.tsx
+    label.tsx
+    select.tsx
+    textarea.tsx
+    checkbox.tsx
+    tabs.tsx
+    badge.tsx
+    popover.tsx
+
+lib/
+  storage.ts                localStorage abstraction and app data logic
+  types.ts                  Shared TypeScript types
+  utils.ts                  General utilities
+  utils-habit.ts            Habit scoring helpers
+
+public/
+  sitemap.xml
+```
+
+## Data Storage
+
+Trackr stores its data in browser `localStorage` using these keys:
+
+- `habit-tracker-habits`
+- `habit-tracker-entries`
+- `habit-tracker-day-notes`
+- `habit-tracker-planned-tasks`
+- `habit-tracker-recurring-task-skips`
+- `habit-tracker-archived-years`
+- `habit-tracker-year-{year}`
+
+## Development And Build
+
+### Install
 
 ```bash
 npm install
 ```
 
-### Development
+### Run Locally
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open `http://localhost:3000` in your browser.
 
-### Build
+### Lint
+
+```bash
+npm run lint
+```
+
+### Production Build
 
 ```bash
 npm run build
-npm star Guide
-
-### Adding Habits
-1. Navigate to "Manage" page
-2. Click "Add Habit" button
-3. Enter habit name and optional description
-4. Select priority level (Low/Medium/High/Critical)
-5. Choose a custom color for visual identification
-6. Click "Add Habit" to save
-
-### Planning Daily Tasks
-1. Go to "Plan" page to access the task planner
-2. Use date navigation to plan for today or future dates
-3. Click "Add Task" button
-4. Fill in task details:
-   - Task title (required)
-   - Description (optional)
-   - Link to a habit (optional) or leave as standalone task
-   - Set task priority
-   - Enable "Recurring" to auto-copy task to next day
-5. View estimated score based on planned task completion
-6. Tasks automatically propagate from previous day if marked recurring
-
-### Daily Tracking
-1. Navigate to "Track" page
-2. Add a daily note to capture the day's highlights (optional)
-3. For habits without tasks:
-   - Click anywhere on the habit card to toggle completion
-   - Instant full score credit on completion
-4. For habits with tasks:
-   - Click anywhere on the habit card to expand/collapse task list
-   - Click anywhere on a task row to toggle completion
-   - Completion percentage shown as badge
-   - Score increases proportionally with task completion
-5. Click note icon to add habit-specific notes
-6. Daily score updates automatically with weighted calculations
-
-### Viewing Analytics
-1. Navigate to "Dashboard" page
-2. Review stats cards at the top:
-   - Today's Score (weighted by completion percentage)
-   Project Structure
-
-```
-trackr/
-├── app/
-│   ├── dashboard/        # Analytics and visualizations
-│   ├── manage/          # Habit management interface
-│   ├── notes/           # Daily notes archive
-│   │   └── [date]/      # Detailed note view for specific date
-│   ├── plan/            # Task planning interface
-│   └── track/           # Daily habit tracking
-├── components/
-│   ├── ui/              # Reusable UI components (buttons, cards, dialogs, etc.)
-│   ├── add-habit-dialog.tsx
-│   ├── add-task-dialog.tsx
-│   ├── app-layout.tsx
-│   ├── dashboard-charts.tsx
-│   ├── habit-checklist.tsx
-│   ├── habit-provider.tsx
-│   ├── planner-view.tsx
-│   ├── stats-overview.tsx
-│   └── task-list.tsx
-└── lib/
-    ├── storage.ts       # localStorage abstraction layer
-    ├── types.ts         # TypeScript interfaces and types
-    ├── utils-habit.ts   # Habit calculation utilities
-    └── utils.ts         # General utility functions
 ```
 
-## Key Concepts
+### Start Production Server
 
-### Weighted Task Scoring
-Tasks contribute to habit scores based on their priority weight:
-- Each task has its own priority (1/2/3/5 points)
-- Task completion percentage = (Completed Task Priority Sum) / (Total Task Priority Sum)
-- Habit score = Habit Priority × Task Completion Percentage
-
-### Recurring Tasks
-- Enable "Recurring" when creating a task
-- Task automatically copies to the next day when loading that date
-- Useful for daily routines and consistent work items
-
-### Completion States
-- **Habits without tasks**: Binary completed/incomplete (0% or 100%)
-- **Habits with tasks**: Granular completion based on task priority weights
-- **Auto-completion**: Habits with tasks auto-mark complete when all tasks are done
-
-### Permission Model
-- **Current and past dates**: Can complete/uncomplete tasks and habits
-- **Future dates**: Read-only for completion, but can add/delete tasks for planning
-
-## Data Storage
-
-All data is stored in browser localStorage with these keys:
-- `habit-tracker-habits`: Habit definitions
-- `habit-tracker-entries`: Daily completion records
-- `habit-tracker-day-notes`: Daily note entries
-- `habit-tracker-planned-tasks`: Task planning data
-- `habit-tracker-archived-years`: Historical year data
-- `habit-tracker-year-{year}`: Archived data for specific year
-
-## Development Notes
-
-### Running the App
-The application uses Turbopack for fast development compilation. Hot module replacement (HMR) enables instant updates during development.
-
-### State Management
-- Global habit state managed via React Context (HabitProvider)
-- Local component state for UI interactions
-- localStorage sync happens on all mutations
-
-### Adding New Features
-1. Define types in `lib/types.ts`
-2. Add storage operations in `lib/storage.ts`
-3. Create UI components in `components/`
-4. Wire up in appropriate page under `app/`
-
-## License
-
-MIT
+```bash
+npm run start
+```
 
 ## Deployment
 
-### Vercel (Recommended)
-1. Push code to GitHub repository
-2. Import project in Vercel dashboard
-3. Deploy with default Next.js settings
-4. Application runs entirely client-side with localStorage
+Trackr is compatible with static or frontend-only deployment platforms because it does not require a server database.
 
-### Other Platforms
-Compatible with any static hosting platform:
+Recommended options:
+
+- Vercel
 - Netlify
 - Cloudflare Pages
 - AWS Amplify
-- GitHub Pages (with proper configuration)
+- GitHub Pages with the appropriate Next.js setup
 
-No server-side requirements - pure static export possible with `next export`
-3. Click "Edit" to modify habit details
-4. Click "Archive" to hide habit while preserving history
-5. Click "Delete" to permanently remove habit and all data
-6. Click "Archived Habits" to view/restore archived habits
-7. Use "Data Management" button for:
-   - Export all data as JSON backup
-   - Import data from backup file
-   - View archived years
+## Notes
 
-### Browsing Notes
-1. Navigate to "Notes" page to see all daily notes
-2. Browse chronologically organized note cards
-3. Each card shows date and note preview
-4. Click on any date card to view detailed breakdown:
-   - Full daily note
-   - All habit-specific notes for that date
-5. Past dates are read-only to prevent accidental edit
-3. Click on any date card to view detailed notes for that day
-4. In detailed view, see your daily note plus all habit-specific notes
-5. Notes from past days are read-only to prevent accidental changes
+- The app is intentionally local-first.
+- Data stays in the browser unless you export it.
+- The dashboard, planner, and notes views are all built around the same shared storage layer.
+- The year heatmap and planner flows were recently updated to better handle recurring task edits and calendar navigation.
 
 ## License
 
 MIT
-
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

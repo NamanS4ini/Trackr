@@ -2,7 +2,7 @@
 
 import { StatsOverview } from '@/components/stats-overview';
 import { DashboardCharts } from '@/components/dashboard-charts';
-import { YearlyOverview } from '@/components/yearly-overview';
+import { YearHeatmap } from '@/components/year-heatmap';
 import { useHabits } from '@/components/habit-provider';
 import AppLayout from '@/components/app-layout';
 
@@ -24,7 +24,7 @@ export default function DashboardPage() {
       <div className="space-y-6">
         <StatsOverview habits={habits} entries={entries} />
         <DashboardCharts habits={habits} entries={entries} />
-        <YearlyOverview habits={habits} entries={entries} />
+        <YearHeatmap habits={habits} entries={entries} />
       </div>
     </AppLayout>
   );
