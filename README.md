@@ -1,12 +1,12 @@
-# Trackr
+# 📊 Trackr
 
 Trackr is a client-side habit tracking and task planning app built with Next.js 16. It combines daily habit completion, weighted task planning, recurring task management, notes, and analytics in one local-first dashboard.
 
-## Overview
+## 🔎 Overview
 
 Trackr is designed for people who want one place to manage habits, plan the day, record notes, and review progress over time. Everything runs in the browser with `localStorage`, so no backend or account is required.
 
-## What’s In The App
+## 🧩 What’s In The App
 
 - Habit management with create, edit, archive, delete, reorder, and restore flows
 - Daily tracking with habit cards, task breakdowns, and completion scoring
@@ -17,7 +17,7 @@ Trackr is designed for people who want one place to manage habits, plan the day,
 - Export/import data management for backups and migration
 - Year archive support for historical data snapshots
 
-## Routes
+## 🗺️ Routes
 
 - `/` - landing page
 - `/dashboard` - stats, charts, and yearly heatmap visualization
@@ -27,9 +27,9 @@ Trackr is designed for people who want one place to manage habits, plan the day,
 - `/notes` - notes archive
 - `/notes/[date]` - detailed notes view for a specific day
 
-## Core Features
+## ⭐ Core Features
 
-### Habit Management
+### ❤️ Habit Management
 
 - Create habits with a title, optional description, color, and priority
 - Edit habit details later
@@ -38,7 +38,7 @@ Trackr is designed for people who want one place to manage habits, plan the day,
 - Permanently delete habits and their related data
 - Reorder habits in the manage view with drag and drop
 
-### Daily Tracking
+### ✅ Daily Tracking
 
 - Mark habits complete from the track page
 - View expanded task lists for habits with subtasks
@@ -46,7 +46,7 @@ Trackr is designed for people who want one place to manage habits, plan the day,
 - Add daily notes for context, reflections, or reminders
 - Lock past entries for read-only safety where appropriate
 
-### Task Planning
+### 🗓️ Task Planning
 
 - Plan tasks for today or any future date
 - Attach a task to a habit or keep it standalone
@@ -56,7 +56,7 @@ Trackr is designed for people who want one place to manage habits, plan the day,
 - Delete a task for just one day or for all future occurrences
 - Use popover confirmations instead of native browser alerts
 
-### Analytics And Visualizations
+### 📈 Analytics And Visualizations
 
 - Stats cards for daily score, completion rate, total habits, and all-time completions
 - Weekly score trend chart
@@ -66,21 +66,21 @@ Trackr is designed for people who want one place to manage habits, plan the day,
 - Year switching based on tracked data
 - Color intensity from inactive days to highly productive days
 
-### Notes
+### 📝 Notes
 
 - Add notes for a specific date
 - Add habit-specific notes alongside daily notes
 - Browse all notes chronologically
 - Open a date-specific detail view for deeper context
 
-### Data Management
+### 💾 Data Management
 
 - Export all app data as JSON
 - Import a backup JSON file
 - Review archived years
 - Keep all user data local to the browser
 
-## Scoring Model
+## ⚖️ Scoring Model
 
 Trackr uses weighted scoring so that task completion affects habit completion more realistically.
 
@@ -90,7 +90,7 @@ Trackr uses weighted scoring so that task completion affects habit completion mo
 - Habits without tasks behave like simple completed/incomplete items
 - Habits with tasks auto-complete once all tasks are done
 
-## Calendar Heatmap Behavior
+## 🗓️ Calendar Heatmap Behavior
 
 - The heatmap shows one year at a time
 - It starts on the current year after refresh
@@ -100,7 +100,7 @@ Trackr uses weighted scoring so that task completion affects habit completion mo
 - The current year only shows days up to today; future days render as empty boxes
 - Earlier years render the full year
 
-## Technology Stack
+## 🧰 Technology Stack
 
 - Next.js 16.2.3
 - React 19.2.3
@@ -115,7 +115,7 @@ Trackr uses weighted scoring so that task completion affects habit completion mo
 - Vercel Analytics
 - Browser `localStorage` for persistence
 
-## Key Libraries And UI Pieces
+## 📦 Key Libraries And UI Pieces
 
 - `@radix-ui/react-dialog`
 - `@radix-ui/react-popover`
@@ -129,7 +129,7 @@ Trackr uses weighted scoring so that task completion affects habit completion mo
 - `cal-heatmap`
 - `react-calendar-heatmap`
 
-## Project Structure
+## 🏗️ Project Structure
 
 ```text
 app/
@@ -192,7 +192,7 @@ public/
   sitemap.xml
 ```
 
-## Data Storage
+## 🗄️ Data Storage
 
 Trackr stores its data in browser `localStorage` using these keys:
 
@@ -204,15 +204,15 @@ Trackr stores its data in browser `localStorage` using these keys:
 - `habit-tracker-archived-years`
 - `habit-tracker-year-{year}`
 
-## Development And Build
+## 🛠️ Development And Build
 
-### Install
+### 🧩 Install
 
 ```bash
 npm install
 ```
 
-### Run Locally
+### ▶️ Run Locally
 
 ```bash
 npm run dev
@@ -220,43 +220,31 @@ npm run dev
 
 Open `http://localhost:3000` in your browser.
 
-### Lint
+### 🔍 Lint
 
 ```bash
 npm run lint
 ```
 
-### Production Build
+### 📦 Production Build
 
 ```bash
 npm run build
 ```
 
-### Start Production Server
+### 🚀 Start Production Server
 
 ```bash
 npm run start
 ```
 
-## Deployment
-
-Trackr is compatible with static or frontend-only deployment platforms because it does not require a server database.
-
-Recommended options:
-
-- Vercel
-- Netlify
-- Cloudflare Pages
-- AWS Amplify
-- GitHub Pages with the appropriate Next.js setup
-
-## Notes
+## ℹ️ Notes
 
 - The app is intentionally local-first.
 - Data stays in the browser unless you export it.
 - The dashboard, planner, and notes views are all built around the same shared storage layer.
 - The year heatmap and planner flows were recently updated to better handle recurring task edits and calendar navigation.
 
-## License
+## 📜 License
 
 MIT

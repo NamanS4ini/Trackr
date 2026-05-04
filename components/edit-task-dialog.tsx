@@ -64,7 +64,7 @@ export function EditTaskDialog({ task, habits, open, onOpenChange, onSave, mode 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-125">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Edit Task</DialogTitle>

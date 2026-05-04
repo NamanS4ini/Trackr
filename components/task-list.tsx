@@ -131,7 +131,7 @@ function TaskItem({ task, habits, onToggle, onDelete, onEdit, readOnly, allowDel
         <div className="flex-1 min-w-0">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-2">
             <div className="flex-1 w-full">
-              <p className={cn('font-medium text-sm sm:text-base break-words', task.completed && 'line-through text-muted-foreground')}>
+              <p className={cn('font-medium text-sm sm:text-base wrap-break-word', task.completed && 'line-through text-muted-foreground')}>
                 {task.title}
                 {task.recurring && (
                   <Badge variant="outline" className="ml-2 text-xs h-4 px-1">
@@ -140,7 +140,7 @@ function TaskItem({ task, habits, onToggle, onDelete, onEdit, readOnly, allowDel
                   </Badge>
                 )}
               </p>
-              {task.description && <p className="text-xs sm:text-sm text-muted-foreground mt-1 break-words">{task.description}</p>}
+              {task.description && <p className="text-xs sm:text-sm text-muted-foreground mt-1 wrap-break-word">{task.description}</p>}
             </div>
 
             <div className="flex items-center gap-2 shrink-0">

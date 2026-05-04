@@ -95,7 +95,7 @@ export function PlannerView({
             <Button variant="outline" size="icon" onClick={handlePrevDay} className="shrink-0">
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <div className="text-center flex-1 sm:min-w-[250px] md:min-w-[300px]">
+            <div className="text-center flex-1 sm:min-w-62.5 md:min-w-75">
               <div className="flex items-center justify-center gap-2">
                 <CalendarIcon className="w-4 sm:w-5 h-4 sm:h-5 text-muted-foreground" />
                 <h2 className="text-base sm:text-xl font-semibold truncate">{dateFormatted}</h2>

@@ -80,7 +80,7 @@ export function AddHabitDialog({ onAdd }: AddHabitDialogProps) {
           Add Habit
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Add New Habit</DialogTitle>

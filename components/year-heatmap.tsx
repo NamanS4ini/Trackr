@@ -247,7 +247,7 @@ export function YearHeatmap({ habits, entries }: YearHeatmapProps) {
                 <div ref={monthsContainerRef} className="overflow-x-auto">
                     <div className="inline-flex gap-6 pb-4">
                         {monthsData.map((month) => (
-                            <div key={month.monthIndex} className="flex-shrink-0">
+                            <div key={month.monthIndex} className="shrink-0">
                                 {/* Month label */}
                                 <div className="text-center text-sm font-semibold mb-2 text-muted-foreground">
                                     {month.monthName}

@@ -66,7 +66,7 @@ export function DashboardCharts({ habits, entries }: DashboardChartsProps) {
             <CardTitle className="text-base sm:text-lg">{chartTitle} Progress</CardTitle>
           </CardHeader>
           <CardContent className="px-2 sm:px-6">
-            <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
+            <ResponsiveContainer width="100%" height={250} className="sm:h-75">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
                 <XAxis 
@@ -107,7 +107,7 @@ export function DashboardCharts({ habits, entries }: DashboardChartsProps) {
             <CardTitle className="text-base sm:text-lg">{chartTitle} Scores</CardTitle>
           </CardHeader>
           <CardContent className="px-2 sm:px-6">
-            <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
+            <ResponsiveContainer width="100%" height={250} className="sm:h-75">
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
                 <XAxis 
