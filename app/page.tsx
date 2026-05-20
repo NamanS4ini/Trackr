@@ -358,15 +358,20 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.5 }}
         >
-          <Link href="/manage" className="hover:text-blue-400 transition-colors inline-flex items-center gap-2 group">
-            <motion.div
-              whileHover={{ rotate: 90 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <Settings className="h-4 w-4" />
-            </motion.div>
-            Settings & Data Management
-          </Link>
+          <div className="flex flex-col items-center gap-2">
+            <Link href="/manage" className="hover:text-blue-400 transition-colors inline-flex items-center gap-2 group">
+              <motion.div
+                whileHover={{ rotate: 90 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <Settings className="h-4 w-4" />
+              </motion.div>
+              Settings & Data Management
+            </Link>
+            <div className="text-xs text-muted-foreground/80">
+              Made with <span aria-hidden>❤️</span> by <a href="https://github.com/naman4ini" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Naman Saini</a>
+            </div>
+          </div>
         </motion.div>
       </div>
     </div>
