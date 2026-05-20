@@ -71,17 +71,17 @@ export default function Home() {
     <div className="min-h-screen bg-black relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div 
+        <motion.div
           className="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"
           animate={{ y: [0, -20, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         />
-        <motion.div 
+        <motion.div
           className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
           animate={{ y: [0, -20, 0] }}
           transition={{ duration: 6, delay: 2, repeat: Infinity, ease: "easeInOut" }}
         />
-        <motion.div 
+        <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl"
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -90,13 +90,13 @@ export default function Home() {
 
       <div className="container mx-auto px-4 py-16 max-w-6xl relative z-10">
         {/* Hero Section */}
-        <motion.div 
+        <motion.div
           className="text-center mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <motion.div 
+          <motion.div
             className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-2 mb-6"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -104,8 +104,8 @@ export default function Home() {
           >
             <span className="text-sm text-blue-400 font-medium">Transform Your Daily Habits</span>
           </motion.div>
-          
-          <motion.h1 
+
+          <motion.h1
             className="text-6xl md:text-7xl font-bold tracking-tight mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -116,18 +116,18 @@ export default function Home() {
               Trackr
             </span>
           </motion.h1>
-          
-          <motion.p 
+
+          <motion.p
             className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Build better habits with <span className="text-blue-400 font-semibold">priority-based tracking</span>, 
+            Build better habits with <span className="text-blue-400 font-semibold">priority-based tracking</span>,
             visual analytics, and smart insights. Transform your daily routine into consistent progress.
           </motion.p>
-          
-          <motion.div 
+
+          <motion.div
             className="flex items-center justify-center gap-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -153,13 +153,13 @@ export default function Home() {
         </motion.div>
 
         {/* Stats Banner */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-3 gap-4 max-w-3xl mx-auto mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
         >
-          <motion.div 
+          <motion.div
             className="text-center p-6 rounded-xl bg-zinc-900/50 border border-zinc-800"
             whileHover={{ scale: 1.05, borderColor: 'rgb(59 130 246 / 0.3)' }}
             transition={{ type: "spring", stiffness: 300 }}
@@ -168,7 +168,7 @@ export default function Home() {
             <div className="text-2xl font-bold">Priority</div>
             <div className="text-xs text-muted-foreground">Based Scoring</div>
           </motion.div>
-          <motion.div 
+          <motion.div
             className="text-center p-6 rounded-xl bg-zinc-900/50 border border-zinc-800"
             whileHover={{ scale: 1.05, borderColor: 'rgb(168 85 247 / 0.3)' }}
             transition={{ type: "spring", stiffness: 300 }}
@@ -177,7 +177,7 @@ export default function Home() {
             <div className="text-2xl font-bold">Unlimited</div>
             <div className="text-xs text-muted-foreground">Habit Tracking</div>
           </motion.div>
-          <motion.div 
+          <motion.div
             className="text-center p-6 rounded-xl bg-zinc-900/50 border border-zinc-800"
             whileHover={{ scale: 1.05, borderColor: 'rgb(34 197 94 / 0.3)' }}
             transition={{ type: "spring", stiffness: 300 }}
@@ -190,7 +190,7 @@ export default function Home() {
 
         {/* Features Grid */}
         <div className="mb-20">
-          <motion.h2 
+          <motion.h2
             className="text-4xl font-bold text-center mb-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -198,7 +198,7 @@ export default function Home() {
           >
             Powerful Features
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-center text-muted-foreground mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -220,7 +220,7 @@ export default function Home() {
                   <Card className="border-zinc-800 bg-zinc-900/30 backdrop-blur-sm h-full">
                     <CardHeader className="pb-3">
                       <div className="flex items-center gap-3 mb-2">
-                        <motion.div 
+                        <motion.div
                           className={`p-2 rounded-lg border ${feature.color}`}
                           whileHover={{ scale: 1.1 }}
                           transition={{ type: "spring", stiffness: 400 }}
@@ -242,7 +242,7 @@ export default function Home() {
 
         {/* How It Works */}
         <div className="mb-20">
-          <motion.h2 
+          <motion.h2
             className="text-4xl font-bold text-center mb-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -250,7 +250,7 @@ export default function Home() {
           >
             How It Works
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-center text-muted-foreground mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -281,14 +281,14 @@ export default function Home() {
             ].map((item, index) => {
               const Icon = item.icon;
               return (
-                <motion.div 
-                  key={item.step} 
+                <motion.div
+                  key={item.step}
                   className="text-center"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.15 }}
                 >
-                  <motion.div 
+                  <motion.div
                     className="relative mb-6"
                     whileHover={{ scale: 1.1, rotate: 6 }}
                     transition={{ type: "spring", stiffness: 300 }}
@@ -297,7 +297,7 @@ export default function Home() {
                       {item.step}
                     </div>
                   </motion.div>
-                  <motion.div 
+                  <motion.div
                     className="mb-3"
                     whileHover={{ scale: 1.1 }}
                     transition={{ type: "spring", stiffness: 400 }}
@@ -315,7 +315,7 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
-        <motion.div 
+        <motion.div
           className="text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -335,7 +335,7 @@ export default function Home() {
                 </motion.div>
                 <h2 className="text-3xl font-bold mb-4">Ready to Build Better Habits?</h2>
                 <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
-                  Everything is stored <span className="text-blue-400 font-semibold">locally in your browser</span>. 
+                  Everything is stored <span className="text-blue-400 font-semibold">locally in your browser</span>.
                   No account required, no data sent to servers.
                 </p>
                 <Link href="/track">
@@ -352,7 +352,7 @@ export default function Home() {
         </motion.div>
 
         {/* Footer */}
-        <motion.div 
+        <motion.div
           className="text-center mt-16 text-sm text-muted-foreground"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -369,7 +369,7 @@ export default function Home() {
               Settings & Data Management
             </Link>
             <div className="text-xs text-muted-foreground/80">
-              Made with <span aria-hidden>❤️</span> by <a href="https://github.com/naman4ini" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Naman Saini</a>
+              Made with <span aria-hidden>❤️</span> by <a href="https://github.com/NamanS4ini" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Naman Saini</a>
             </div>
           </div>
         </motion.div>
