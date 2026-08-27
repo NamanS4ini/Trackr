@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ConfirmationPopover } from '@/components/ui/confirmation-popover';
 import { Habit, HabitStats } from '@/lib/types';
-import { Pencil, Trash2, Archive, ArchiveRestore } from 'lucide-react';
+import { Pencil, Trash2, Archive, ArchiveRestore, Calendar, RefreshCw } from 'lucide-react';
 import { EditHabitDialog } from './edit-habit-dialog';
+import { storage } from '@/lib/storage';
 
 interface HabitCardProps {
   habit: Habit;
@@ -48,6 +49,30 @@ export function HabitCard({ habit, stats, onUpdate, onDelete }: HabitCardProps) 
             <Badge variant="outline" className="ml-2">
               {PRIORITY_LABELS[habit.priority]}
             </Badge>
+          </div>
+
+          {/* Schedule & Rotation Badges */}
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            {habit.activeDays && habit.activeDays.length > 0 && habit.activeDays.length < 7 && (
+              <Badge variant="secondary" className="text-xs gap-1">
+                <Calendar className="h-3 w-3" />
+                {habit.activeDays.map(d => ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d]).join(', ')}
+              </Badge>
+            )}
+            {habit.rotationGroupId && (() => {
+              const allHabits = storage.getHabits().filter(h => !h.archived);
+              const groupMembers = allHabits
+                .filter(h => h.rotationGroupId === habit.rotationGroupId)
+                .sort((a, b) => (a.rotationGroupOrder ?? 0) - (b.rotationGroupOrder ?? 0));
+              const otherNames = groupMembers.filter(h => h.id !== habit.id).map(h => h.name);
+              const groupLabel = habit.rotationGroupName || otherNames.join(' ↔ ');
+              return (
+                <Badge variant="secondary" className="text-xs gap-1">
+                  <RefreshCw className="h-3 w-3" />
+                  {groupLabel}
+                </Badge>
+              );
+            })()}
           </div>
         </CardHeader>
         <CardContent className="pl-4">

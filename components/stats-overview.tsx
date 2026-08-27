@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Habit, HabitEntry, PRIORITY_VALUES } from '@/lib/types';
-import { calculateDailyScore, getToday } from '@/lib/utils-habit';
+import { calculateDailyScore, getToday, getActiveHabitsForDate } from '@/lib/utils-habit';
 import { TrendingUp, Target, Flame, Award } from 'lucide-react';
 
 interface StatsOverviewProps {
@@ -15,9 +15,10 @@ export function StatsOverview({ habits, entries }: StatsOverviewProps) {
   const todayScore = calculateDailyScore(habits, entries, today);
   
   const activeHabits = habits.filter(h => !h.archived);
+  const todayActiveHabits = getActiveHabitsForDate(activeHabits, today);
   const todayEntries = entries.filter(e => e.date === today && e.completed);
   
-  const maxPossibleScore = activeHabits.reduce((sum, habit) => {
+  const maxPossibleScore = todayActiveHabits.reduce((sum, habit) => {
     return sum + PRIORITY_VALUES[habit.priority];
   }, 0);
 
@@ -31,7 +32,7 @@ export function StatsOverview({ habits, entries }: StatsOverviewProps) {
     {
       title: "Today's Score",
       value: todayScore.toFixed(1),
-      subtitle: `${todayEntries.length} of ${activeHabits.length} habits`,
+      subtitle: `${todayEntries.length} of ${todayActiveHabits.length} habits`,
       icon: Target,
       color: '#3b82f6',
     },

@@ -6,7 +6,7 @@ import { ListChecks, LayoutDashboard, Settings, Flame, Zap, FileText, Calendar }
 import { cn } from '@/lib/utils';
 import { useHabits } from '@/components/habit-provider';
 import { subDays } from 'date-fns';
-import { formatDate, calculateDailyScore } from '@/lib/utils-habit';
+import { formatDate, calculateDailyScore, getActiveHabitsForDate } from '@/lib/utils-habit';
 
 export function Navigation() {
   const pathname = usePathname();
@@ -31,10 +31,18 @@ export function Navigation() {
     
     while (streak < 365) {
       const dateStr = formatDate(currentDate);
+      const todayActiveHabits = getActiveHabitsForDate(activeHabits, dateStr);
+      
+      // If no habits are scheduled for this day, skip it (don't break streak)
+      if (todayActiveHabits.length === 0) {
+        currentDate = subDays(currentDate, 1);
+        continue;
+      }
+      
       const dayEntries = entries.filter(e => e.date === dateStr && e.completed);
       const completedHabitIds = new Set(dayEntries.map(e => e.habitId));
       
-      const allCompleted = activeHabits.every(habit => completedHabitIds.has(habit.id));
+      const allCompleted = todayActiveHabits.every(habit => completedHabitIds.has(habit.id));
       
       if (!allCompleted) break;
       
@@ -54,7 +62,15 @@ export function Navigation() {
     
     while (streak < 365) {
       const dateStr = formatDate(currentDate);
-      const score = calculateDailyScore(activeHabits, entries, dateStr);
+      const todayActiveHabits = getActiveHabitsForDate(activeHabits, dateStr);
+      
+      // If no habits are scheduled for this day, skip it
+      if (todayActiveHabits.length === 0) {
+        currentDate = subDays(currentDate, 1);
+        continue;
+      }
+      
+      const score = calculateDailyScore(todayActiveHabits, entries, dateStr);
       
       if (score === 0) break;
       

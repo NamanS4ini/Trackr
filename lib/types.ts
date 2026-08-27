@@ -9,6 +9,10 @@ export interface Habit {
   createdAt: string;
   archived: boolean;
   order: number;
+  activeDays?: number[];         // 0=Sun, 1=Mon, ..., 6=Sat. undefined/empty = every day
+  rotationGroupId?: string;      // Shared ID among habits in the same rotation group
+  rotationGroupOrder?: number;   // 0-indexed position within the rotation group
+  rotationGroupName?: string;    // Optional display name for the rotation group
 }
 
 export interface HabitEntry {

@@ -10,6 +10,7 @@ import { Habit, HabitEntry, PRIORITY_VALUES, PRIORITY_COLORS, PlannedTask } from
 import { Check, Clock, StickyNote, FileText, Save, X, ListTodo } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { storage } from '@/lib/storage';
+import { getActiveHabitsForDate } from '@/lib/utils-habit';
 
 interface HabitChecklistProps {
   habits: Habit[];
@@ -43,9 +44,10 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
     setPlannedTasks(tasks);
   });
 
-  const activeHabits = habits
-    .filter((h) => !h.archived)
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
+  const activeHabits = getActiveHabitsForDate(
+    habits.filter((h) => !h.archived),
+    date
+  ).sort((a, b) => (a.order || 0) - (b.order || 0));
 
   const getEntry = (habitId: string) => {
     return entries.find((e) => e.habitId === habitId && e.date === date);

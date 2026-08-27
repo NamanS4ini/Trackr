@@ -271,3 +271,89 @@ export function getNextOrder(habits: Habit[]): number {
   if (habits.length === 0) return 0;
   return Math.max(...habits.map(h => h.order || 0)) + 1;
 }
+
+// --- Scheduling & Rotation Helpers ---
+
+/**
+ * Returns the number of days since Unix epoch (1970-01-01) for a YYYY-MM-DD string.
+ * Uses UTC to avoid timezone issues.
+ */
+export function getDaysSinceEpoch(dateStr: string): number {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return Math.floor(Date.UTC(y, m - 1, d) / 86400000);
+}
+
+/**
+ * Determines the rotation index (0-based) for a given date within a group of `groupSize`.
+ * If `activeDays` is provided, the counter only advances on active days so the
+ * rotation skips non-active days entirely.
+ */
+export function getRotationIndex(dateStr: string, groupSize: number, activeDays?: number[]): number {
+  if (groupSize <= 1) return 0;
+
+  const daysSinceEpoch = getDaysSinceEpoch(dateStr);
+
+  if (!activeDays || activeDays.length === 0 || activeDays.length === 7) {
+    // Every day is active — simple modulo
+    return ((daysSinceEpoch % groupSize) + groupSize) % groupSize;
+  }
+
+  // Count how many active days have occurred from epoch (day 0) to this day (inclusive).
+  // Epoch (1970-01-01) was a Thursday (getDay() === 4).
+  const EPOCH_DOW = 4; // Thursday
+
+  const fullWeeks = Math.floor(daysSinceEpoch / 7);
+  const remainder = daysSinceEpoch % 7;
+  const activeDaysPerWeek = activeDays.length;
+
+  let count = fullWeeks * activeDaysPerWeek;
+
+  // Count active days in the partial week (day 0 through remainder)
+  for (let i = 0; i <= remainder; i++) {
+    const dow = (EPOCH_DOW + i) % 7;
+    if (activeDays.includes(dow)) {
+      count++;
+    }
+  }
+
+  // count is 1-based (first active day = 1), convert to 0-based
+  return count > 0 ? (count - 1) % groupSize : 0;
+}
+
+/**
+ * Checks whether a habit should be shown on a given date,
+ * considering both its day-of-week filter and rotation group membership.
+ */
+export function isHabitActiveOnDate(habit: Habit, dateStr: string, allHabits: Habit[]): boolean {
+  // 1. Day-of-week filter
+  if (habit.activeDays && habit.activeDays.length > 0 && habit.activeDays.length < 7) {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const dayOfWeek = new Date(y, m - 1, d).getDay(); // 0=Sun … 6=Sat
+    if (!habit.activeDays.includes(dayOfWeek)) {
+      return false;
+    }
+  }
+
+  // 2. Rotation group filter
+  if (habit.rotationGroupId) {
+    const groupHabits = allHabits
+      .filter(h => h.rotationGroupId === habit.rotationGroupId && !h.archived)
+      .sort((a, b) => (a.rotationGroupOrder ?? 0) - (b.rotationGroupOrder ?? 0));
+
+    if (groupHabits.length > 1) {
+      // Use this habit's activeDays for the rotation counter (all members should share the same schedule)
+      const rotIdx = getRotationIndex(dateStr, groupHabits.length, habit.activeDays);
+      return groupHabits[rotIdx]?.id === habit.id;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Returns only the habits that should be visible on a given date
+ * (respects day-of-week filter and rotation groups).
+ */
+export function getActiveHabitsForDate(habits: Habit[], dateStr: string): Habit[] {
+  return habits.filter(h => isHabitActiveOnDate(h, dateStr, habits));
+}
