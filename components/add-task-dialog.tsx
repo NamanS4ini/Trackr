@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Habit, Priority, PlannedTask } from '@/lib/types';
 import { generateId } from '@/lib/utils-habit';
-import { Plus } from 'lucide-react';
+import { Plus, Clock } from 'lucide-react';
 
 interface AddTaskDialogProps {
   date: string;
@@ -41,6 +41,8 @@ export function AddTaskDialog({ date, habits, existingTasks, onAddTask, children
   const [habitId, setHabitId] = useState<string>('none');
   const [recurring, setRecurring] = useState(false);
   const [priority, setPriority] = useState<Priority>('medium');
+  const [scheduledStart, setScheduledStart] = useState('');
+  const [scheduledEnd, setScheduledEnd] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,6 +64,8 @@ export function AddTaskDialog({ date, habits, existingTasks, onAddTask, children
       createdAt: new Date().toISOString(),
       order: maxOrder + 1,
       recurring,
+      scheduledStart: scheduledStart || undefined,
+      scheduledEnd: scheduledEnd || undefined,
     };
 
     onAddTask(newTask);
@@ -72,6 +76,8 @@ export function AddTaskDialog({ date, habits, existingTasks, onAddTask, children
     setHabitId('none');
     setPriority('medium');
     setRecurring(false);
+    setScheduledStart('');
+    setScheduledEnd('');
     setOpen(false);
   };
 
@@ -173,6 +179,38 @@ export function AddTaskDialog({ date, habits, existingTasks, onAddTask, children
                   <SelectItem value="critical">Critical</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Scheduled Time */}
+            <div className="grid gap-2">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <Label>Scheduled Time <span className="text-muted-foreground font-normal">(optional)</span></Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 grid gap-1">
+                  <Label htmlFor="start-time" className="text-xs text-muted-foreground">Start</Label>
+                  <input
+                    id="start-time"
+                    type="time"
+                    value={scheduledStart}
+                    onChange={(e) => setScheduledStart(e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                </div>
+                <span className="text-muted-foreground mt-5">–</span>
+                <div className="flex-1 grid gap-1">
+                  <Label htmlFor="end-time" className="text-xs text-muted-foreground">End</Label>
+                  <input
+                    id="end-time"
+                    type="time"
+                    value={scheduledEnd}
+                    onChange={(e) => setScheduledEnd(e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">Sets when this task should be done — enables live status tracking</p>
             </div>
           </div>
           <DialogFooter>

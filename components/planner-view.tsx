@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AddTaskDialog } from '@/components/add-task-dialog';
 import { TaskList } from '@/components/task-list';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, ArrowUpDown } from 'lucide-react';
 import { formatDate } from '@/lib/utils-habit';
 
 interface PlannerViewProps {
@@ -32,6 +32,7 @@ export function PlannerView({
   onDateChange,
 }: PlannerViewProps) {
   const [selectedDate, setSelectedDate] = useState(initialDate);
+  const [sortByTime, setSortByTime] = useState(false);
 
   const handlePrevDay = () => {
     const newDate = formatDate(subDays(parseISO(selectedDate), 1));
@@ -157,16 +158,30 @@ export function PlannerView({
 
       {/* Task List */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Tasks</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Tasks</h3>
+          <Button
+            variant={sortByTime ? 'secondary' : 'ghost'}
+            size="sm"
+            onClick={() => setSortByTime(s => !s)}
+            className="gap-1.5 h-7 text-xs"
+            title="Sort by scheduled time"
+          >
+            <ArrowUpDown className="h-3 w-3" />
+            Sort by time
+          </Button>
+        </div>
         <TaskList
           tasks={tasks}
           habits={habits}
+          date={selectedDate}
           onToggleTask={onToggleTask}
           onDeleteTask={onDeleteTask}
           onEditTask={onEditTask ?? (() => { })}
           groupByHabit={true}
           readOnly={!isToday}
           allowDelete={true}
+          sortByTime={sortByTime}
         />
       </Card>
 

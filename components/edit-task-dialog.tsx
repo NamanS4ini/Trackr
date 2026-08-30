@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Habit, PlannedTask, Priority } from '@/lib/types';
+import { Clock } from 'lucide-react';
 
 interface EditTaskDialogProps {
   task: PlannedTask | null;
@@ -25,6 +26,8 @@ export function EditTaskDialog({ task, habits, open, onOpenChange, onSave, mode 
   const [habitId, setHabitId] = useState<string>('none');
   const [recurring, setRecurring] = useState(false);
   const [priority, setPriority] = useState<Priority>('medium');
+  const [scheduledStart, setScheduledStart] = useState('');
+  const [scheduledEnd, setScheduledEnd] = useState('');
 
   useEffect(() => {
     if (task) {
@@ -40,6 +43,8 @@ export function EditTaskDialog({ task, habits, open, onOpenChange, onSave, mode 
         setRecurring(!!task.recurring);
       }
       setPriority(task.priority);
+      setScheduledStart(task.scheduledStart ?? '');
+      setScheduledEnd(task.scheduledEnd ?? '');
     }
   }, [task, mode]);
 
@@ -54,6 +59,8 @@ export function EditTaskDialog({ task, habits, open, onOpenChange, onSave, mode 
       // ensure this instance becomes non-recurring (an exception for that day).
       recurring: mode === 'day-only' && task?.recurring ? false : recurring,
       priority,
+      scheduledStart: scheduledStart || undefined,
+      scheduledEnd: scheduledEnd || undefined,
     };
 
     onSave(task.id, updates, mode);
@@ -109,6 +116,38 @@ export function EditTaskDialog({ task, habits, open, onOpenChange, onSave, mode 
                   <SelectItem value="critical">Critical</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Scheduled Time */}
+            <div className="grid gap-2">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <Label>Scheduled Time <span className="text-muted-foreground font-normal">(optional)</span></Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 grid gap-1">
+                  <Label htmlFor="edit-start-time" className="text-xs text-muted-foreground">Start</Label>
+                  <input
+                    id="edit-start-time"
+                    type="time"
+                    value={scheduledStart}
+                    onChange={(e) => setScheduledStart(e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                </div>
+                <span className="text-muted-foreground mt-5">–</span>
+                <div className="flex-1 grid gap-1">
+                  <Label htmlFor="edit-end-time" className="text-xs text-muted-foreground">End</Label>
+                  <input
+                    id="edit-end-time"
+                    type="time"
+                    value={scheduledEnd}
+                    onChange={(e) => setScheduledEnd(e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">Sets when this task should be done — enables live status tracking</p>
             </div>
           </div>
           <DialogFooter>

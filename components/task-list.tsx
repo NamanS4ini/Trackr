@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PlannedTask, Habit, PRIORITY_COLORS } from '@/lib/types';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,38 +8,140 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { EditTaskDialog } from './edit-task-dialog';
-import { Trash2, Repeat, Pencil } from 'lucide-react';
+import { Trash2, Repeat, Pencil, Clock, ArrowUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+
+// ─── Time Status Helpers (duplicated from habit-checklist for standalone use) ──
+
+type TimeStatus = 'completed' | 'running' | 'missed' | 'upcoming' | 'no-time';
+
+function hhmm(time: string): number {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function nowMinutes(): number {
+  const n = new Date();
+  return n.getHours() * 60 + n.getMinutes();
+}
+
+function formatTime(time: string): string {
+  const [h, m] = time.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hour = h % 12 || 12;
+  return `${hour}:${m.toString().padStart(2, '0')} ${ampm}`;
+}
+
+function formatTimeRange(start?: string, end?: string): string {
+  if (!start) return '';
+  if (!end) return formatTime(start);
+  return `${formatTime(start)} – ${formatTime(end)}`;
+}
+
+function getTaskTimeStatus(task: PlannedTask, date: string): TimeStatus {
+  if (task.completed) return 'completed';
+  if (!task.scheduledStart) return 'no-time';
+
+  const today = format(new Date(), 'yyyy-MM-dd');
+  if (date < today) return 'missed';
+  if (date > today) return 'upcoming';
+
+  const now = nowMinutes();
+  const start = hhmm(task.scheduledStart);
+  const end = task.scheduledEnd ? hhmm(task.scheduledEnd) : start + 60;
+
+  if (now < start) return 'upcoming';
+  if (now >= start && now <= end) return 'running';
+  return 'missed';
+}
+
+function statusSortWeight(s: TimeStatus): number {
+  switch (s) {
+    case 'running': return 0;
+    case 'upcoming': return 1;
+    case 'missed': return 2;
+    case 'no-time': return 3;
+    case 'completed': return 4;
+  }
+}
+
+const STATUS_CARD_CLASS: Record<TimeStatus, string> = {
+  running: 'border-l-4 border-l-blue-500',
+  missed: 'border-l-4 border-l-red-500',
+  upcoming: 'border-l-4 border-l-green-500',
+  completed: '',
+  'no-time': '',
+};
+
+const STATUS_TIME_COLOR: Record<TimeStatus, string> = {
+  running: 'text-blue-400',
+  missed: 'text-red-400',
+  upcoming: 'text-green-400',
+  completed: 'text-muted-foreground',
+  'no-time': 'text-muted-foreground',
+};
+
+// ─── TaskList Component ────────────────────────────────────────────────────────
 
 interface TaskListProps {
   tasks: PlannedTask[];
   habits: Habit[];
+  date?: string;
   onToggleTask: (taskId: string) => void;
   onDeleteTask: (taskId: string, mode?: 'day-only' | 'all-future') => void;
   onEditTask: (taskId: string, updates: Partial<PlannedTask>, mode?: 'day-only' | 'all-future') => void;
   groupByHabit?: boolean;
   readOnly?: boolean;
   allowDelete?: boolean;
+  sortByTime?: boolean;
 }
 
 export function TaskList({
   tasks,
   habits,
+  date,
   onToggleTask,
   onDeleteTask,
   onEditTask,
   groupByHabit = true,
   readOnly = false,
   allowDelete = true,
+  sortByTime = false,
 }: TaskListProps) {
+  // Tick to refresh time statuses every minute
+  const [, setTick] = useState(0);
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const effectiveDate = date ?? today;
+
+  useEffect(() => {
+    if (effectiveDate !== today) return;
+    const interval = setInterval(() => setTick(t => t + 1), 60_000);
+    return () => clearInterval(interval);
+  }, [effectiveDate, today]);
+
   if (tasks.length === 0) {
     return <div className="text-center py-8 text-muted-foreground">No tasks planned yet</div>;
   }
+
+  // Sort tasks if requested
+  const maybeSorted = sortByTime
+    ? [...tasks].sort((a, b) => {
+      const sa = getTaskTimeStatus(a, effectiveDate);
+      const sb = getTaskTimeStatus(b, effectiveDate);
+      const w = statusSortWeight(sa) - statusSortWeight(sb);
+      if (w !== 0) return w;
+      const startA = a.scheduledStart ?? '99:99';
+      const startB = b.scheduledStart ?? '99:99';
+      return startA.localeCompare(startB);
+    })
+    : tasks;
 
   const renderTask = (task: PlannedTask) => (
     <TaskItem
       key={task.id}
       task={task}
+      date={effectiveDate}
       habits={habits}
       onToggle={onToggleTask}
       onDelete={onDeleteTask}
@@ -51,7 +153,7 @@ export function TaskList({
 
   if (groupByHabit) {
     const tasksByHabit = new Map<string | undefined, PlannedTask[]>();
-    tasks.forEach((t) => {
+    maybeSorted.forEach((t) => {
       const key = t.habitId || 'standalone';
       if (!tasksByHabit.has(key)) tasksByHabit.set(key, []);
       tasksByHabit.get(key)!.push(t);
@@ -91,11 +193,14 @@ export function TaskList({
     );
   }
 
-  return <div className="space-y-2">{tasks.map((t) => renderTask(t))}</div>;
+  return <div className="space-y-2">{maybeSorted.map((t) => renderTask(t))}</div>;
 }
+
+// ─── TaskItem Component ────────────────────────────────────────────────────────
 
 interface TaskItemProps {
   task: PlannedTask;
+  date: string;
   habits: Habit[];
   onToggle: (taskId: string) => void;
   onDelete: (taskId: string, mode?: 'day-only' | 'all-future') => void;
@@ -104,12 +209,17 @@ interface TaskItemProps {
   allowDelete: boolean;
 }
 
-function TaskItem({ task, habits, onToggle, onDelete, onEdit, readOnly, allowDelete }: TaskItemProps) {
+function TaskItem({ task, date, habits, onToggle, onDelete, onEdit, readOnly, allowDelete }: TaskItemProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deletePopoverOpen, setDeletePopoverOpen] = useState(false);
   const [editChoiceOpen, setEditChoiceOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState<'day-only' | 'all-future'>('day-only');
+
+  const status = getTaskTimeStatus(task, date);
+  const borderClass = STATUS_CARD_CLASS[status];
+  const timeColor = STATUS_TIME_COLOR[status];
+  const timeRange = formatTimeRange(task.scheduledStart, task.scheduledEnd);
 
   const handleDelete = (mode: 'day-only' | 'all-future' = 'day-only') => {
     setIsDeleting(true);
@@ -124,7 +234,12 @@ function TaskItem({ task, habits, onToggle, onDelete, onEdit, readOnly, allowDel
   };
 
   return (
-    <Card className={cn('p-3 sm:p-4 transition-all', task.completed && 'opacity-60', isDeleting && 'opacity-30')}>
+    <Card className={cn(
+      'p-3 sm:p-4 transition-all overflow-hidden',
+      borderClass,
+      task.completed && 'opacity-60',
+      isDeleting && 'opacity-30'
+    )}>
       <div className="flex items-start gap-2 sm:gap-3">
         <Checkbox checked={task.completed} onCheckedChange={() => onToggle(task.id)} disabled={readOnly} className="mt-1 shrink-0" />
 
@@ -141,6 +256,17 @@ function TaskItem({ task, habits, onToggle, onDelete, onEdit, readOnly, allowDel
                 )}
               </p>
               {task.description && <p className="text-xs sm:text-sm text-muted-foreground mt-1 wrap-break-word">{task.description}</p>}
+
+              {/* Time badge */}
+              {timeRange && (
+                <span className={cn('inline-flex items-center gap-1 text-xs mt-1', timeColor)}>
+                  <Clock className="w-3 h-3" />
+                  {timeRange}
+                  {status === 'running' && (
+                    <span className="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                  )}
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-2 shrink-0">

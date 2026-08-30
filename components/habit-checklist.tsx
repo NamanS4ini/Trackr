@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Habit, HabitEntry, PRIORITY_VALUES, PRIORITY_COLORS, PlannedTask } from '@/lib/types';
-import { Check, Clock, StickyNote, FileText, Save, X, ListTodo } from 'lucide-react';
+import { Check, Clock, StickyNote, FileText, Save, X, ListTodo, ArrowUpDown } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { storage } from '@/lib/storage';
 import { getActiveHabitsForDate } from '@/lib/utils-habit';
@@ -21,6 +21,138 @@ interface HabitChecklistProps {
   onRefresh?: () => void;
 }
 
+// ─── Time Status ─────────────────────────────────────────────────────────────
+
+type TimeStatus = 'completed' | 'running' | 'missed' | 'upcoming' | 'no-time';
+
+/** Convert "HH:MM" to total minutes since midnight */
+function hhmm(time: string): number {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+}
+
+/** Current time as minutes since midnight */
+function nowMinutes(): number {
+  const n = new Date();
+  return n.getHours() * 60 + n.getMinutes();
+}
+
+/** Format "HH:MM" → "h:mm AM/PM" */
+function formatTime(time: string): string {
+  const [h, m] = time.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hour = h % 12 || 12;
+  return `${hour}:${m.toString().padStart(2, '0')} ${ampm}`;
+}
+
+/** Format a time range for display */
+function formatTimeRange(start?: string, end?: string): string {
+  if (!start) return '';
+  if (!end) return formatTime(start);
+  return `${formatTime(start)} – ${formatTime(end)}`;
+}
+
+/**
+ * Determine the time status of a task given the current date and time.
+ * - Today: compare vs. live clock
+ * - Past days: missed if not completed (completed handled separately)
+ * - Future days: upcoming (time hasn't arrived yet)
+ */
+function getTaskTimeStatus(
+  task: PlannedTask,
+  date: string,
+  isCompleted: boolean,
+): TimeStatus {
+  if (isCompleted) return 'completed';
+  if (!task.scheduledStart) return 'no-time';
+
+  const today = format(new Date(), 'yyyy-MM-dd');
+
+  if (date < today) {
+    // Past day — if not completed and had a time, it's missed
+    return 'missed';
+  }
+
+  if (date > today) {
+    // Future day — always upcoming
+    return 'upcoming';
+  }
+
+  // Today — compare vs current time
+  const now = nowMinutes();
+  const start = hhmm(task.scheduledStart);
+  const end = task.scheduledEnd ? hhmm(task.scheduledEnd) : start + 60;
+
+  if (now < start) return 'upcoming';
+  if (now >= start && now <= end) return 'running';
+  return 'missed';
+}
+
+/**
+ * Derive the overall status for a habit from its tasks (worst status wins).
+ * Priority order: running > missed > upcoming > no-time > completed
+ */
+function getHabitTimeStatus(tasks: PlannedTask[], isHabitCompleted: boolean, date: string): TimeStatus {
+  if (isHabitCompleted) return 'completed';
+  if (tasks.length === 0) return 'no-time';
+
+  const statuses = tasks.map(t => getTaskTimeStatus(t, date, t.completed));
+
+  if (statuses.includes('running')) return 'running';
+  if (statuses.includes('missed')) return 'missed';
+  if (statuses.includes('upcoming')) return 'upcoming';
+  if (statuses.every(s => s === 'completed')) return 'completed';
+  return 'no-time';
+}
+
+/** Sort order weight for time-based sorting */
+function statusSortWeight(status: TimeStatus): number {
+  switch (status) {
+    case 'running': return 0;
+    case 'upcoming': return 1;
+    case 'missed': return 2;
+    case 'no-time': return 3;
+    case 'completed': return 4;
+  }
+}
+
+/** Get the earliest scheduledStart across tasks for sorting within a group */
+function earliestStart(tasks: PlannedTask[]): string {
+  const starts = tasks
+    .filter(t => t.scheduledStart)
+    .map(t => t.scheduledStart as string)
+    .sort();
+  return starts[0] ?? '99:99';
+}
+
+// ─── Visual styles per status ─────────────────────────────────────────────────
+
+const STATUS_BORDER: Record<TimeStatus, string> = {
+  running: 'border-l-4 border-l-blue-500',
+  missed: 'border-l-4 border-l-red-500',
+  upcoming: 'border-l-4 border-l-green-500',
+  completed: 'border-l-4 border-l-zinc-700',
+  'no-time': '',
+};
+
+const STATUS_TASK_BORDER: Record<TimeStatus, string> = {
+  running: 'border-l-2 border-l-blue-500 bg-blue-950/20',
+  missed: 'border-l-2 border-l-red-500 bg-red-950/20',
+  upcoming: 'border-l-2 border-l-green-500',
+  completed: '',
+  'no-time': '',
+};
+
+const STATUS_BADGE: Record<TimeStatus, { label: string; className: string }> = {
+  running: { label: '● Running', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+  missed: { label: '✕ Missed', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
+  upcoming: { label: '◎ Upcoming', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
+  completed: { label: '', className: '' },
+  'no-time': { label: '', className: '' },
+};
+
+// ─── Main Component ──────────────────────────────────────────────────────────
+
 export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, onRefresh }: HabitChecklistProps) {
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
@@ -29,20 +161,34 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
   const [isEditingDailyNote, setIsEditingDailyNote] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [plannedTasks, setPlannedTasks] = useState<PlannedTask[]>([]);
+  const [sortByTime, setSortByTime] = useState(false);
+  // Tick state to force re-render every minute for live status updates
+  const [, setTick] = useState(0);
 
   const today = format(new Date(), 'yyyy-MM-dd');
   const isPastDay = date < today;
 
-  useState(() => {
-    setMounted(true);
+  const loadData = useCallback(() => {
     const dayNote = storage.getDayNote(date);
-    if (dayNote) {
-      setDailyNote(dayNote.note);
-    }
-    // Load planned tasks for this date
+    if (dayNote) setDailyNote(dayNote.note);
     const tasks = storage.getPlannedTasksForDate(date);
     setPlannedTasks(tasks);
+  }, [date]);
+
+  // Initial load
+  useState(() => {
+    setMounted(true);
+    loadData();
   });
+
+  // Refresh every minute for live time-status updates (only needed for today)
+  useEffect(() => {
+    if (date !== today) return;
+    const interval = setInterval(() => {
+      setTick(t => t + 1);
+    }, 60_000);
+    return () => clearInterval(interval);
+  }, [date, today]);
 
   const activeHabits = getActiveHabitsForDate(
     habits.filter((h) => !h.archived),
@@ -56,6 +202,33 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
   const getHabitTasks = (habitId: string): PlannedTask[] => {
     return plannedTasks.filter(t => t.habitId === habitId);
   };
+
+  // ─── Sort logic ───────────────────────────────────────────────────────────
+
+  const getSortedHabits = () => {
+    if (!sortByTime) return activeHabits;
+
+    return [...activeHabits].sort((a, b) => {
+      const entryA = getEntry(a.id);
+      const entryB = getEntry(b.id);
+      const tasksA = getHabitTasks(a.id);
+      const tasksB = getHabitTasks(b.id);
+      const statusA = getHabitTimeStatus(tasksA, entryA?.completed || false, date);
+      const statusB = getHabitTimeStatus(tasksB, entryB?.completed || false, date);
+
+      const weightDiff = statusSortWeight(statusA) - statusSortWeight(statusB);
+      if (weightDiff !== 0) return weightDiff;
+
+      // Same status group: sort by earliest start time
+      const startA = earliestStart(tasksA);
+      const startB = earliestStart(tasksB);
+      return startA.localeCompare(startB);
+    });
+  };
+
+  const displayedHabits = getSortedHabits();
+
+  // ─── Handlers ─────────────────────────────────────────────────────────────
 
   const toggleNote = (habitId: string) => {
     const newExpanded = new Set(expandedNotes);
@@ -83,13 +256,9 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
 
   const handleToggleTask = (taskId: string) => {
     storage.toggleTaskCompletion(taskId);
-    // Reload tasks
     const tasks = storage.getPlannedTasksForDate(date);
     setPlannedTasks(tasks);
-    // Trigger refresh to reload entries with updated completion status
-    if (onRefresh) {
-      onRefresh();
-    }
+    if (onRefresh) onRefresh();
   };
 
   const handleToggle = (habitId: string) => {
@@ -136,6 +305,13 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
       return sum + ((PRIORITY_VALUES[h.priority] * completionPercentage) / 100);
     }, 0);
 
+  // Count habits currently running (for the sort button badge)
+  const runningCount = activeHabits.filter(h => {
+    const tasks = getHabitTasks(h.id);
+    const entry = getEntry(h.id);
+    return getHabitTimeStatus(tasks, entry?.completed || false, date) === 'running';
+  }).length;
+
   return (
     <div className="space-y-2">
       <Card className="border-zinc-800">
@@ -143,6 +319,23 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
             <CardTitle className="text-base sm:text-lg">{format(new Date(date), 'EEEE, MMMM d')}</CardTitle>
             <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+              {/* Sort by time toggle */}
+              <Button
+                variant={sortByTime ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => setSortByTime(s => !s)}
+                className="gap-1.5 h-7 text-xs"
+                title="Sort by scheduled time"
+              >
+                <ArrowUpDown className="h-3 w-3" />
+                Sort by time
+                {sortByTime && runningCount > 0 && (
+                  <span className="ml-0.5 bg-blue-500 text-white rounded-full px-1.5 py-0 text-[10px] leading-4">
+                    {runningCount}
+                  </span>
+                )}
+              </Button>
+
               <div className="text-right">
                 <div className="text-lg sm:text-xl font-bold text-blue-400">{completedCount}/{activeHabits.length}</div>
                 <div className="text-xs text-muted-foreground">Done</div>
@@ -222,7 +415,7 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
         </Card>
       ) : (
         <div className="grid gap-1.5">
-          {activeHabits.map((habit) => {
+          {displayedHabits.map((habit) => {
             const entry = getEntry(habit.id);
             const isCompleted = entry?.completed || false;
             const showNote = expandedNotes.has(habit.id);
@@ -234,10 +427,14 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
             const completionPercentage = entry?.completionPercentage ?? 100;
             const completedTasksCount = habitTasks.filter(t => t.completed).length;
 
+            const habitStatus = getHabitTimeStatus(habitTasks, isCompleted, date);
+            const borderClass = STATUS_BORDER[habitStatus];
+            const statusBadge = STATUS_BADGE[habitStatus];
+
             return (
               <Card
                 key={habit.id}
-                className={`border-zinc-800 transition-all ${isCompleted ? 'bg-zinc-900/50' : 'hover:bg-zinc-900/30'
+                className={`border-zinc-800 transition-all overflow-hidden ${borderClass} ${isCompleted ? 'bg-zinc-900/50' : 'hover:bg-zinc-900/30'
                   } ${!hasTasks || hasTasks ? 'cursor-pointer' : ''}`}
                 onClick={() => {
                   if (!hasTasks) {
@@ -268,7 +465,7 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                     </button>
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <h3 className={`text-sm font-medium ${isCompleted ? 'text-zinc-400' : 'text-zinc-100'}`}>
                           {habit.name}
                         </h3>
@@ -285,6 +482,15 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                         {hasTasks && (
                           <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4">
                             {completedTasksCount}/{habitTasks.length} tasks • {completionPercentage}%
+                          </Badge>
+                        )}
+                        {/* Time status badge */}
+                        {statusBadge.label && (
+                          <Badge
+                            variant="outline"
+                            className={`text-xs px-1.5 py-0 h-4 ${statusBadge.className}`}
+                          >
+                            {statusBadge.label}
                           </Badge>
                         )}
                         {isCompleted && completedAt && (
@@ -328,30 +534,49 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
 
                   {showTasks && hasTasks && (
                     <div className="mt-2 pl-7 space-y-1.5" onClick={(e) => e.stopPropagation()}>
-                      {habitTasks.map(task => (
-                        <div
-                          key={task.id}
-                          className={`flex items-start gap-2 p-2 bg-zinc-900 border border-zinc-800 rounded ${!isPastDay ? 'cursor-pointer hover:bg-zinc-800/50' : ''} transition-colors`}
-                          onClick={() => !isPastDay && handleToggleTask(task.id)}
-                        >
-                          <Checkbox
-                            checked={task.completed}
-                            onCheckedChange={() => !isPastDay && handleToggleTask(task.id)}
-                            disabled={isPastDay}
-                            className="mt-0.5 pointer-events-none"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className={`text-sm ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
-                              {task.title}
-                            </p>
-                            {task.description && (
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                {task.description}
+                      {habitTasks.map(task => {
+                        const taskStatus = getTaskTimeStatus(task, date, task.completed);
+                        const taskBorderClass = STATUS_TASK_BORDER[taskStatus];
+                        const timeRange = formatTimeRange(task.scheduledStart, task.scheduledEnd);
+
+                        return (
+                          <div
+                            key={task.id}
+                            className={`flex items-start gap-2 p-2 bg-zinc-900 border border-zinc-800 rounded ${taskBorderClass} ${!isPastDay ? 'cursor-pointer hover:bg-zinc-800/50' : ''} transition-colors`}
+                            onClick={() => !isPastDay && handleToggleTask(task.id)}
+                          >
+                            <Checkbox
+                              checked={task.completed}
+                              onCheckedChange={() => !isPastDay && handleToggleTask(task.id)}
+                              disabled={isPastDay}
+                              className="mt-0.5 pointer-events-none"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                                {task.title}
                               </p>
-                            )}
+                              {task.description && (
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                  {task.description}
+                                </p>
+                              )}
+                              {timeRange && (
+                                <span className={`inline-flex items-center gap-1 text-xs mt-1 ${taskStatus === 'running'
+                                  ? 'text-blue-400'
+                                  : taskStatus === 'missed'
+                                    ? 'text-red-400'
+                                    : taskStatus === 'upcoming'
+                                      ? 'text-green-400'
+                                      : 'text-muted-foreground'
+                                  }`}>
+                                  <Clock className="h-3 w-3" />
+                                  {timeRange}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
 

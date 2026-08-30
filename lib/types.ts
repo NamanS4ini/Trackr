@@ -37,6 +37,8 @@ export interface PlannedTask {
   createdAt: string;
   order: number;
   recurring?: boolean; // If true, task will be copied to next day when completed
+  scheduledStart?: string; // "HH:MM" (24h) — start of the scheduled time window
+  scheduledEnd?: string;   // "HH:MM" (24h) — end of the scheduled time window
 }
 
 export interface DayNote {
