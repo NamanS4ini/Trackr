@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import { Habit, Priority } from '@/lib/types';
 import { generateId, getToday, getNextOrder } from '@/lib/utils-habit';
-import { Plus, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw, Clock } from 'lucide-react';
 import { storage } from '@/lib/storage';
 
 interface AddHabitDialogProps {
@@ -61,6 +61,8 @@ export function AddHabitDialog({ onAdd }: AddHabitDialogProps) {
   const [activeDays, setActiveDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
   const [rotationSelection, setRotationSelection] = useState('none');
   const [rotationGroupName, setRotationGroupName] = useState('');
+  const [scheduledStart, setScheduledStart] = useState('');
+  const [scheduledEnd, setScheduledEnd] = useState('');
 
   const getRotationOptions = (): RotationOption[] => {
     const allHabits = storage.getHabits().filter(h => !h.archived);
@@ -183,6 +185,8 @@ export function AddHabitDialog({ onAdd }: AddHabitDialogProps) {
       rotationGroupId: finalRotationGroupId,
       rotationGroupOrder: finalRotationGroupOrder,
       rotationGroupName: finalRotationGroupName,
+      scheduledStart: scheduledStart || undefined,
+      scheduledEnd: scheduledEnd || undefined,
     };
 
     onAdd(habit);
@@ -198,6 +202,8 @@ export function AddHabitDialog({ onAdd }: AddHabitDialogProps) {
     setActiveDays([0, 1, 2, 3, 4, 5, 6]);
     setRotationSelection('none');
     setRotationGroupName('');
+    setScheduledStart('');
+    setScheduledEnd('');
   };
 
   const rotationOptions = open ? getRotationOptions() : [];
@@ -339,6 +345,38 @@ export function AddHabitDialog({ onAdd }: AddHabitDialogProps) {
               <p className="text-xs text-muted-foreground">
                 Rotation groups alternate habits so only one from the group shows per day
               </p>
+            </div>
+
+            {/* Scheduled Time (for habits without tasks) */}
+            <div className="grid gap-2">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <Label>Scheduled Time <span className="text-muted-foreground font-normal">(optional, for habits without tasks)</span></Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 grid gap-1">
+                  <Label htmlFor="habit-start-time" className="text-xs text-muted-foreground">Start</Label>
+                  <input
+                    id="habit-start-time"
+                    type="time"
+                    value={scheduledStart}
+                    onChange={(e) => setScheduledStart(e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                </div>
+                <span className="text-muted-foreground mt-5">–</span>
+                <div className="flex-1 grid gap-1">
+                  <Label htmlFor="habit-end-time" className="text-xs text-muted-foreground">End</Label>
+                  <input
+                    id="habit-end-time"
+                    type="time"
+                    value={scheduledEnd}
+                    onChange={(e) => setScheduledEnd(e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">If this habit has no tasks, this sets its scheduled window for live status tracking</p>
             </div>
           </div>
           <DialogFooter>

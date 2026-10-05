@@ -13,6 +13,8 @@ export interface Habit {
   rotationGroupId?: string;      // Shared ID among habits in the same rotation group
   rotationGroupOrder?: number;   // 0-indexed position within the rotation group
   rotationGroupName?: string;    // Optional display name for the rotation group
+  scheduledStart?: string;       // "HH:MM" (24h) — used when the habit has no tasks
+  scheduledEnd?: string;         // "HH:MM" (24h) — used when the habit has no tasks
 }
 
 export interface HabitEntry {

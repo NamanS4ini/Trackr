@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format, parseISO, addDays, subDays, isFuture, isPast } from 'date-fns';
 import { Habit, PlannedTask } from '@/lib/types';
 import { Card } from '@/components/ui/card';
@@ -33,6 +33,13 @@ export function PlannerView({
 }: PlannerViewProps) {
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [sortByTime, setSortByTime] = useState(false);
+
+  const SORT_PREF_KEY = 'trackr-sort-by-time';
+
+  // Restore sort preference from localStorage on mount
+  useEffect(() => {
+    setSortByTime(localStorage.getItem(SORT_PREF_KEY) === 'true');
+  }, []);
 
   const handlePrevDay = () => {
     const newDate = formatDate(subDays(parseISO(selectedDate), 1));
@@ -163,7 +170,11 @@ export function PlannerView({
           <Button
             variant={sortByTime ? 'secondary' : 'ghost'}
             size="sm"
-            onClick={() => setSortByTime(s => !s)}
+            onClick={() => {
+              const next = !sortByTime;
+              setSortByTime(next);
+              localStorage.setItem(SORT_PREF_KEY, String(next));
+            }}
             className="gap-1.5 h-7 text-xs"
             title="Sort by scheduled time"
           >

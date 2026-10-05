@@ -89,12 +89,36 @@ function getTaskTimeStatus(
 }
 
 /**
- * Derive the overall status for a habit from its tasks (worst status wins).
+ * Derive the overall status for a habit from its tasks, falling back to the
+ * habit's own scheduledStart/scheduledEnd when it has no tasks.
  * Priority order: running > missed > upcoming > no-time > completed
  */
-function getHabitTimeStatus(tasks: PlannedTask[], isHabitCompleted: boolean, date: string): TimeStatus {
+function getHabitTimeStatus(
+  habit: { scheduledStart?: string; scheduledEnd?: string },
+  tasks: PlannedTask[],
+  isHabitCompleted: boolean,
+  date: string,
+): TimeStatus {
   if (isHabitCompleted) return 'completed';
-  if (tasks.length === 0) return 'no-time';
+
+  if (tasks.length === 0) {
+    // No tasks — use the habit's own scheduled window
+    if (!habit.scheduledStart) return 'no-time';
+
+    // Reuse the same logic as getTaskTimeStatus via a synthetic object
+    const syntheticTask: PlannedTask = {
+      id: '',
+      date,
+      title: '',
+      priority: 'medium',
+      completed: false,
+      createdAt: '',
+      order: 0,
+      scheduledStart: habit.scheduledStart,
+      scheduledEnd: habit.scheduledEnd,
+    };
+    return getTaskTimeStatus(syntheticTask, date, false);
+  }
 
   const statuses = tasks.map(t => getTaskTimeStatus(t, date, t.completed));
 
@@ -116,13 +140,17 @@ function statusSortWeight(status: TimeStatus): number {
   }
 }
 
-/** Get the earliest scheduledStart across tasks for sorting within a group */
-function earliestStart(tasks: PlannedTask[]): string {
+/** Get the earliest scheduledStart across tasks (or habit's own time) for sorting within a group */
+function earliestStart(
+  habit: { scheduledStart?: string },
+  tasks: PlannedTask[],
+): string {
+  if (tasks.length === 0) return habit.scheduledStart ?? '99:99';
   const starts = tasks
     .filter(t => t.scheduledStart)
     .map(t => t.scheduledStart as string)
     .sort();
-  return starts[0] ?? '99:99';
+  return starts[0] ?? (habit.scheduledStart ?? '99:99');
 }
 
 // ─── Visual styles per status ─────────────────────────────────────────────────
@@ -165,6 +193,8 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
   // Tick state to force re-render every minute for live status updates
   const [, setTick] = useState(0);
 
+  const SORT_PREF_KEY = 'trackr-sort-by-time';
+
   const today = format(new Date(), 'yyyy-MM-dd');
   const isPastDay = date < today;
 
@@ -175,10 +205,13 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
     setPlannedTasks(tasks);
   }, [date]);
 
-  // Initial load
+  // Initial load — also restore sort preference
   useState(() => {
     setMounted(true);
     loadData();
+    if (typeof window !== 'undefined') {
+      setSortByTime(localStorage.getItem(SORT_PREF_KEY) === 'true');
+    }
   });
 
   // Refresh every minute for live time-status updates (only needed for today)
@@ -213,15 +246,15 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
       const entryB = getEntry(b.id);
       const tasksA = getHabitTasks(a.id);
       const tasksB = getHabitTasks(b.id);
-      const statusA = getHabitTimeStatus(tasksA, entryA?.completed || false, date);
-      const statusB = getHabitTimeStatus(tasksB, entryB?.completed || false, date);
+      const statusA = getHabitTimeStatus(a, tasksA, entryA?.completed || false, date);
+      const statusB = getHabitTimeStatus(b, tasksB, entryB?.completed || false, date);
 
       const weightDiff = statusSortWeight(statusA) - statusSortWeight(statusB);
       if (weightDiff !== 0) return weightDiff;
 
       // Same status group: sort by earliest start time
-      const startA = earliestStart(tasksA);
-      const startB = earliestStart(tasksB);
+      const startA = earliestStart(a, tasksA);
+      const startB = earliestStart(b, tasksB);
       return startA.localeCompare(startB);
     });
   };
@@ -309,7 +342,7 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
   const runningCount = activeHabits.filter(h => {
     const tasks = getHabitTasks(h.id);
     const entry = getEntry(h.id);
-    return getHabitTimeStatus(tasks, entry?.completed || false, date) === 'running';
+    return getHabitTimeStatus(h, tasks, entry?.completed || false, date) === 'running';
   }).length;
 
   return (
@@ -323,7 +356,13 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
               <Button
                 variant={sortByTime ? 'secondary' : 'ghost'}
                 size="sm"
-                onClick={() => setSortByTime(s => !s)}
+                onClick={() => {
+                  const next = !sortByTime;
+                  setSortByTime(next);
+                  if (typeof window !== 'undefined') {
+                    localStorage.setItem(SORT_PREF_KEY, String(next));
+                  }
+                }}
                 className="gap-1.5 h-7 text-xs"
                 title="Sort by scheduled time"
               >
@@ -427,7 +466,7 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
             const completionPercentage = entry?.completionPercentage ?? 100;
             const completedTasksCount = habitTasks.filter(t => t.completed).length;
 
-            const habitStatus = getHabitTimeStatus(habitTasks, isCompleted, date);
+            const habitStatus = getHabitTimeStatus(habit, habitTasks, isCompleted, date);
             const borderClass = STATUS_BORDER[habitStatus];
             const statusBadge = STATUS_BADGE[habitStatus];
 
@@ -502,6 +541,21 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                       </div>
                       {habit.description && (
                         <p className="text-sm text-muted-foreground">{habit.description}</p>
+                      )}
+                      {/* Habit-level time display (only for habits without tasks) */}
+                      {!hasTasks && habit.scheduledStart && !isCompleted && (
+                        <span className={`inline-flex items-center gap-1 text-xs mt-0.5 ${
+                          habitStatus === 'running' ? 'text-blue-400'
+                          : habitStatus === 'missed' ? 'text-red-400'
+                          : habitStatus === 'upcoming' ? 'text-green-400'
+                          : 'text-muted-foreground'
+                        }`}>
+                          <Clock className="h-3 w-3" />
+                          {formatTimeRange(habit.scheduledStart, habit.scheduledEnd)}
+                          {habitStatus === 'running' && (
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                          )}
+                        </span>
                       )}
                     </div>
 
