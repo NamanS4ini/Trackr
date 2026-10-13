@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Habit, PlannedTask, Priority } from '@/lib/types';
-import { Clock } from 'lucide-react';
+import { Clock, Globe, Shield } from 'lucide-react';
 
 interface EditTaskDialogProps {
   task: PlannedTask | null;
@@ -28,6 +28,8 @@ export function EditTaskDialog({ task, habits, open, onOpenChange, onSave, mode 
   const [priority, setPriority] = useState<Priority>('medium');
   const [scheduledStart, setScheduledStart] = useState('');
   const [scheduledEnd, setScheduledEnd] = useState('');
+  const [url, setUrl] = useState('');
+  const [blockListText, setBlockListText] = useState('');
 
   useEffect(() => {
     if (task) {
@@ -45,12 +47,19 @@ export function EditTaskDialog({ task, habits, open, onOpenChange, onSave, mode 
       setPriority(task.priority);
       setScheduledStart(task.scheduledStart ?? '');
       setScheduledEnd(task.scheduledEnd ?? '');
+      setUrl(task.url ?? '');
+      setBlockListText(task.blockList ? task.blockList.join(', ') : '');
     }
   }, [task, mode]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!task) return;
+    const parsedBlockList = blockListText
+      .split(/[\n,]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+
     const updates: Partial<PlannedTask> = {
       title: title.trim(),
       description: description.trim() || undefined,
@@ -61,6 +70,8 @@ export function EditTaskDialog({ task, habits, open, onOpenChange, onSave, mode 
       priority,
       scheduledStart: scheduledStart || undefined,
       scheduledEnd: scheduledEnd || undefined,
+      url: url.trim() || undefined,
+      blockList: parsedBlockList.length > 0 ? parsedBlockList : undefined,
     };
 
     onSave(task.id, updates, mode);
@@ -148,6 +159,46 @@ export function EditTaskDialog({ task, habits, open, onOpenChange, onSave, mode 
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">Sets when this task should be done — enables live status tracking</p>
+            </div>
+
+            {/* Extension Integration */}
+            <div className="rounded-lg border border-border/60 bg-muted/20 p-3 space-y-3">
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <Globe className="h-3.5 w-3.5 text-blue-400" />
+                Browser Focus & Extension
+              </div>
+
+              <div className="grid gap-1.5">
+                <Label htmlFor="edit-task-url" className="text-xs flex items-center gap-1.5">
+                  <Globe className="h-3 w-3 text-muted-foreground" />
+                  Auto-Open Website on Start <span className="text-muted-foreground font-normal">(optional)</span>
+                </Label>
+                <Input
+                  id="edit-task-url"
+                  type="url"
+                  placeholder="https://leetcode.com/problemset/all/"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+
+              <div className="grid gap-1.5">
+                <Label htmlFor="edit-task-blocklist" className="text-xs flex items-center gap-1.5">
+                  <Shield className="h-3 w-3 text-rose-400" />
+                  Block Sites During Window <span className="text-muted-foreground font-normal">(wildcards allowed)</span>
+                </Label>
+                <Input
+                  id="edit-task-blocklist"
+                  placeholder="*.youtube.com, twitter.com, reddit.com/* (or * to block all)"
+                  value={blockListText}
+                  onChange={(e) => setBlockListText(e.target.value)}
+                  className="h-8 text-xs"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Sites will be blocked during scheduled time and unblocked as soon as task is marked done.
+                </p>
+              </div>
             </div>
           </div>
           <DialogFooter>

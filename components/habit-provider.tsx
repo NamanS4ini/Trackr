@@ -33,6 +33,17 @@ export function HabitProvider({ children }: { children: ReactNode }) {
     storage.checkAndArchiveIfNewYear();
     loadData();
     setMounted(true);
+
+    const handleSync = () => {
+      loadData();
+    };
+
+    window.addEventListener('storage', handleSync);
+    window.addEventListener('trackr-sync', handleSync);
+    return () => {
+      window.removeEventListener('storage', handleSync);
+      window.removeEventListener('trackr-sync', handleSync);
+    };
   }, []);
 
   const addHabit = (habit: Habit) => {

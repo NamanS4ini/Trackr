@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { EditTaskDialog } from './edit-task-dialog';
-import { Trash2, Repeat, Pencil, Clock, ArrowUpDown } from 'lucide-react';
+import { Trash2, Repeat, Pencil, Clock, ArrowUpDown, Globe, Shield, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
@@ -257,16 +257,43 @@ function TaskItem({ task, date, habits, onToggle, onDelete, onEdit, readOnly, al
               </p>
               {task.description && <p className="text-xs sm:text-sm text-muted-foreground mt-1 wrap-break-word">{task.description}</p>}
 
-              {/* Time badge */}
-              {timeRange && (
-                <span className={cn('inline-flex items-center gap-1 text-xs mt-1', timeColor)}>
-                  <Clock className="w-3 h-3" />
-                  {timeRange}
-                  {status === 'running' && (
-                    <span className="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                  )}
-                </span>
-              )}
+              {/* Time and extension badges */}
+              <div className="flex flex-wrap items-center gap-2 mt-1">
+                {timeRange && (
+                  <span className={cn('inline-flex items-center gap-1 text-xs', timeColor)}>
+                    <Clock className="w-3 h-3" />
+                    {timeRange}
+                    {status === 'running' && (
+                      <span className="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                    )}
+                  </span>
+                )}
+
+                {task.url && (
+                  <a
+                    href={task.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 hover:underline bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20"
+                    onClick={(e) => e.stopPropagation()}
+                    title={`Open: ${task.url}`}
+                  >
+                    <Globe className="w-3 h-3" />
+                    <span>Link</span>
+                    <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                  </a>
+                )}
+
+                {task.blockList && task.blockList.length > 0 && (
+                  <span
+                    className="inline-flex items-center gap-1 text-xs text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20"
+                    title={`Focus Block List: ${task.blockList.join(', ')}`}
+                  >
+                    <Shield className="w-3 h-3" />
+                    <span>{task.blockList.length} blocked</span>
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center gap-2 shrink-0">

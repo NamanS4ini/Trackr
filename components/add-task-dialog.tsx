@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Habit, Priority, PlannedTask } from '@/lib/types';
 import { generateId } from '@/lib/utils-habit';
-import { Plus, Clock } from 'lucide-react';
+import { Plus, Clock, Globe, Shield } from 'lucide-react';
 
 interface AddTaskDialogProps {
   date: string;
@@ -43,6 +43,8 @@ export function AddTaskDialog({ date, habits, existingTasks, onAddTask, children
   const [priority, setPriority] = useState<Priority>('medium');
   const [scheduledStart, setScheduledStart] = useState('');
   const [scheduledEnd, setScheduledEnd] = useState('');
+  const [url, setUrl] = useState('');
+  const [blockListText, setBlockListText] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +68,13 @@ export function AddTaskDialog({ date, habits, existingTasks, onAddTask, children
       recurring,
       scheduledStart: scheduledStart || undefined,
       scheduledEnd: scheduledEnd || undefined,
+      url: url.trim() || undefined,
+      blockList: blockListText.trim()
+        ? blockListText
+            .split(/[\n,]+/)
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : undefined,
     };
 
     onAddTask(newTask);
@@ -78,6 +87,8 @@ export function AddTaskDialog({ date, habits, existingTasks, onAddTask, children
     setRecurring(false);
     setScheduledStart('');
     setScheduledEnd('');
+    setUrl('');
+    setBlockListText('');
     setOpen(false);
   };
 
@@ -211,6 +222,46 @@ export function AddTaskDialog({ date, habits, existingTasks, onAddTask, children
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">Sets when this task should be done — enables live status tracking</p>
+            </div>
+
+            {/* Extension Integration */}
+            <div className="rounded-lg border border-border/60 bg-muted/20 p-3 space-y-3">
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <Globe className="h-3.5 w-3.5 text-blue-400" />
+                Browser Focus & Extension
+              </div>
+
+              <div className="grid gap-1.5">
+                <Label htmlFor="task-url" className="text-xs flex items-center gap-1.5">
+                  <Globe className="h-3 w-3 text-muted-foreground" />
+                  Auto-Open Website on Start <span className="text-muted-foreground font-normal">(optional)</span>
+                </Label>
+                <Input
+                  id="task-url"
+                  type="url"
+                  placeholder="https://leetcode.com/problemset/all/"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+
+              <div className="grid gap-1.5">
+                <Label htmlFor="task-blocklist" className="text-xs flex items-center gap-1.5">
+                  <Shield className="h-3 w-3 text-rose-400" />
+                  Block Sites During Window <span className="text-muted-foreground font-normal">(wildcards allowed)</span>
+                </Label>
+                <Input
+                  id="task-blocklist"
+                  placeholder="*.youtube.com, twitter.com, reddit.com/* (or * to block all)"
+                  value={blockListText}
+                  onChange={(e) => setBlockListText(e.target.value)}
+                  className="h-8 text-xs"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Sites will be blocked during scheduled time and unblocked as soon as task is marked done.
+                </p>
+              </div>
             </div>
           </div>
           <DialogFooter>

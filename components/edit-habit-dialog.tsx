@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select';
 import { Habit, Priority } from '@/lib/types';
 import { generateId } from '@/lib/utils-habit';
-import { RefreshCw, Clock } from 'lucide-react';
+import { RefreshCw, Clock, Globe, Shield } from 'lucide-react';
 import { storage } from '@/lib/storage';
 
 interface EditHabitDialogProps {
@@ -61,6 +61,8 @@ export function EditHabitDialog({ habit, open, onOpenChange, onUpdate }: EditHab
   const [rotationGroupName, setRotationGroupName] = useState(habit.rotationGroupName || '');
   const [scheduledStart, setScheduledStart] = useState(habit.scheduledStart || '');
   const [scheduledEnd, setScheduledEnd] = useState(habit.scheduledEnd || '');
+  const [url, setUrl] = useState(habit.url || '');
+  const [blockListText, setBlockListText] = useState(habit.blockList ? habit.blockList.join(', ') : '');
 
   const getRotationOptions = (): RotationOption[] => {
     const allHabits = storage.getHabits().filter(h => !h.archived);
@@ -259,6 +261,11 @@ export function EditHabitDialog({ habit, open, onOpenChange, onUpdate }: EditHab
       }
     }
 
+    const parsedBlockList = blockListText
+      .split(/[\n,]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+
     onUpdate(habit.id, {
       name: name.trim(),
       description: description.trim(),
@@ -270,6 +277,8 @@ export function EditHabitDialog({ habit, open, onOpenChange, onUpdate }: EditHab
       rotationGroupName: finalRotationGroupName,
       scheduledStart: scheduledStart || undefined,
       scheduledEnd: scheduledEnd || undefined,
+      url: url.trim() || undefined,
+      blockList: parsedBlockList.length > 0 ? parsedBlockList : undefined,
     });
 
     onOpenChange(false);
@@ -445,6 +454,46 @@ export function EditHabitDialog({ habit, open, onOpenChange, onUpdate }: EditHab
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">If this habit has no tasks, this sets its scheduled window for live status tracking</p>
+            </div>
+
+            {/* Extension Integration */}
+            <div className="rounded-lg border border-border/60 bg-muted/20 p-3 space-y-3">
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <Globe className="h-3.5 w-3.5 text-blue-400" />
+                Browser Focus & Extension
+              </div>
+
+              <div className="grid gap-1.5">
+                <Label htmlFor="edit-habit-url" className="text-xs flex items-center gap-1.5">
+                  <Globe className="h-3 w-3 text-muted-foreground" />
+                  Auto-Open Website on Start <span className="text-muted-foreground font-normal">(optional)</span>
+                </Label>
+                <Input
+                  id="edit-habit-url"
+                  type="url"
+                  placeholder="https://leetcode.com/problemset/all/"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+
+              <div className="grid gap-1.5">
+                <Label htmlFor="edit-habit-blocklist" className="text-xs flex items-center gap-1.5">
+                  <Shield className="h-3 w-3 text-rose-400" />
+                  Block Sites During Window <span className="text-muted-foreground font-normal">(wildcards allowed)</span>
+                </Label>
+                <Input
+                  id="edit-habit-blocklist"
+                  placeholder="*.youtube.com, twitter.com, reddit.com/* (or * to block all)"
+                  value={blockListText}
+                  onChange={(e) => setBlockListText(e.target.value)}
+                  className="h-8 text-xs"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Sites will be blocked during scheduled time and unblocked as soon as habit is completed.
+                </p>
+              </div>
             </div>
           </div>
           <DialogFooter>

@@ -22,6 +22,17 @@ export default function PlanPage() {
     if (mounted) {
       loadTasks(selectedDate);
     }
+
+    const handleSync = () => {
+      loadTasks(selectedDate);
+    };
+
+    window.addEventListener('storage', handleSync);
+    window.addEventListener('trackr-sync', handleSync);
+    return () => {
+      window.removeEventListener('storage', handleSync);
+      window.removeEventListener('trackr-sync', handleSync);
+    };
   }, [mounted, selectedDate]);
 
   const handleAddTask = (task: PlannedTask) => {

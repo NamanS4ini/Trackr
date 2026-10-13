@@ -15,6 +15,8 @@ export interface Habit {
   rotationGroupName?: string;    // Optional display name for the rotation group
   scheduledStart?: string;       // "HH:MM" (24h) — used when the habit has no tasks
   scheduledEnd?: string;         // "HH:MM" (24h) — used when the habit has no tasks
+  url?: string;                  // URL to auto-open when habit has no tasks (extension feature)
+  blockList?: string[];          // Sites to block during scheduled window (extension feature)
 }
 
 export interface HabitEntry {
@@ -41,6 +43,8 @@ export interface PlannedTask {
   recurring?: boolean; // If true, task will be copied to next day when completed
   scheduledStart?: string; // "HH:MM" (24h) — start of the scheduled time window
   scheduledEnd?: string;   // "HH:MM" (24h) — end of the scheduled time window
+  url?: string;            // URL to auto-open when task starts (extension feature)
+  blockList?: string[];    // Wildcard patterns of sites to block during task window (extension feature)
 }
 
 export interface DayNote {

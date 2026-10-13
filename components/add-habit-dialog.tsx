@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import { Habit, Priority } from '@/lib/types';
 import { generateId, getToday, getNextOrder } from '@/lib/utils-habit';
-import { Plus, RefreshCw, Clock } from 'lucide-react';
+import { Plus, RefreshCw, Clock, Globe, Shield } from 'lucide-react';
 import { storage } from '@/lib/storage';
 
 interface AddHabitDialogProps {
@@ -63,6 +63,8 @@ export function AddHabitDialog({ onAdd }: AddHabitDialogProps) {
   const [rotationGroupName, setRotationGroupName] = useState('');
   const [scheduledStart, setScheduledStart] = useState('');
   const [scheduledEnd, setScheduledEnd] = useState('');
+  const [url, setUrl] = useState('');
+  const [blockListText, setBlockListText] = useState('');
 
   const getRotationOptions = (): RotationOption[] => {
     const allHabits = storage.getHabits().filter(h => !h.archived);
@@ -187,6 +189,13 @@ export function AddHabitDialog({ onAdd }: AddHabitDialogProps) {
       rotationGroupName: finalRotationGroupName,
       scheduledStart: scheduledStart || undefined,
       scheduledEnd: scheduledEnd || undefined,
+      url: url.trim() || undefined,
+      blockList: blockListText.trim()
+        ? blockListText
+            .split(/[\n,]+/)
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : undefined,
     };
 
     onAdd(habit);
@@ -204,6 +213,8 @@ export function AddHabitDialog({ onAdd }: AddHabitDialogProps) {
     setRotationGroupName('');
     setScheduledStart('');
     setScheduledEnd('');
+    setUrl('');
+    setBlockListText('');
   };
 
   const rotationOptions = open ? getRotationOptions() : [];
@@ -377,6 +388,46 @@ export function AddHabitDialog({ onAdd }: AddHabitDialogProps) {
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">If this habit has no tasks, this sets its scheduled window for live status tracking</p>
+            </div>
+
+            {/* Extension Integration */}
+            <div className="rounded-lg border border-border/60 bg-muted/20 p-3 space-y-3">
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <Globe className="h-3.5 w-3.5 text-blue-400" />
+                Browser Focus & Extension
+              </div>
+
+              <div className="grid gap-1.5">
+                <Label htmlFor="habit-url" className="text-xs flex items-center gap-1.5">
+                  <Globe className="h-3 w-3 text-muted-foreground" />
+                  Auto-Open Website on Start <span className="text-muted-foreground font-normal">(optional)</span>
+                </Label>
+                <Input
+                  id="habit-url"
+                  type="url"
+                  placeholder="https://leetcode.com/problemset/all/"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+
+              <div className="grid gap-1.5">
+                <Label htmlFor="habit-blocklist" className="text-xs flex items-center gap-1.5">
+                  <Shield className="h-3 w-3 text-rose-400" />
+                  Block Sites During Window <span className="text-muted-foreground font-normal">(wildcards allowed)</span>
+                </Label>
+                <Input
+                  id="habit-blocklist"
+                  placeholder="*.youtube.com, twitter.com, reddit.com/* (or * to block all)"
+                  value={blockListText}
+                  onChange={(e) => setBlockListText(e.target.value)}
+                  className="h-8 text-xs"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Sites will be blocked during scheduled time and unblocked as soon as habit is completed.
+                </p>
+              </div>
             </div>
           </div>
           <DialogFooter>

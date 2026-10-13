@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Habit, HabitEntry, PRIORITY_VALUES, PRIORITY_COLORS, PlannedTask } from '@/lib/types';
-import { Check, Clock, StickyNote, FileText, Save, X, ListTodo, ArrowUpDown } from 'lucide-react';
+import { Check, Clock, StickyNote, FileText, Save, X, ListTodo, ArrowUpDown, Globe, Shield, ExternalLink } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { storage } from '@/lib/storage';
 import { getActiveHabitsForDate } from '@/lib/utils-habit';
@@ -544,18 +544,45 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                       )}
                       {/* Habit-level time display (only for habits without tasks) */}
                       {!hasTasks && habit.scheduledStart && !isCompleted && (
-                        <span className={`inline-flex items-center gap-1 text-xs mt-0.5 ${
-                          habitStatus === 'running' ? 'text-blue-400'
-                          : habitStatus === 'missed' ? 'text-red-400'
-                          : habitStatus === 'upcoming' ? 'text-green-400'
-                          : 'text-muted-foreground'
-                        }`}>
-                          <Clock className="h-3 w-3" />
-                          {formatTimeRange(habit.scheduledStart, habit.scheduledEnd)}
-                          {habitStatus === 'running' && (
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                        <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                          <span className={`inline-flex items-center gap-1 text-xs ${
+                            habitStatus === 'running' ? 'text-blue-400'
+                            : habitStatus === 'missed' ? 'text-red-400'
+                            : habitStatus === 'upcoming' ? 'text-green-400'
+                            : 'text-muted-foreground'
+                          }`}>
+                            <Clock className="h-3 w-3" />
+                            {formatTimeRange(habit.scheduledStart, habit.scheduledEnd)}
+                            {habitStatus === 'running' && (
+                              <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                            )}
+                          </span>
+
+                          {habit.url && (
+                            <a
+                              href={habit.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 hover:underline bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20"
+                              onClick={(e) => e.stopPropagation()}
+                              title={`Open: ${habit.url}`}
+                            >
+                              <Globe className="w-3 h-3" />
+                              <span>Link</span>
+                              <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                            </a>
                           )}
-                        </span>
+
+                          {habit.blockList && habit.blockList.length > 0 && (
+                            <span
+                              className="inline-flex items-center gap-1 text-xs text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20"
+                              title={`Focus Block List: ${habit.blockList.join(', ')}`}
+                            >
+                              <Shield className="w-3 h-3" />
+                              <span>{habit.blockList.length} blocked</span>
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
 
@@ -614,19 +641,46 @@ export function HabitChecklist({ habits, entries, date, onToggle, onUpdateNote, 
                                   {task.description}
                                 </p>
                               )}
-                              {timeRange && (
-                                <span className={`inline-flex items-center gap-1 text-xs mt-1 ${taskStatus === 'running'
-                                  ? 'text-blue-400'
-                                  : taskStatus === 'missed'
-                                    ? 'text-red-400'
-                                    : taskStatus === 'upcoming'
-                                      ? 'text-green-400'
-                                      : 'text-muted-foreground'
-                                  }`}>
-                                  <Clock className="h-3 w-3" />
-                                  {timeRange}
-                                </span>
-                              )}
+                              <div className="flex flex-wrap items-center gap-2 mt-1">
+                                {timeRange && (
+                                  <span className={`inline-flex items-center gap-1 text-xs ${taskStatus === 'running'
+                                    ? 'text-blue-400'
+                                    : taskStatus === 'missed'
+                                      ? 'text-red-400'
+                                      : taskStatus === 'upcoming'
+                                        ? 'text-green-400'
+                                        : 'text-muted-foreground'
+                                    }`}>
+                                    <Clock className="h-3 w-3" />
+                                    {timeRange}
+                                  </span>
+                                )}
+
+                                {task.url && (
+                                  <a
+                                    href={task.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 hover:underline bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20"
+                                    onClick={(e) => e.stopPropagation()}
+                                    title={`Open: ${task.url}`}
+                                  >
+                                    <Globe className="w-3 h-3" />
+                                    <span>Link</span>
+                                    <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                                  </a>
+                                )}
+
+                                {task.blockList && task.blockList.length > 0 && (
+                                  <span
+                                    className="inline-flex items-center gap-1 text-xs text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20"
+                                    title={`Focus Block List: ${task.blockList.join(', ')}`}
+                                  >
+                                    <Shield className="w-3 h-3" />
+                                    <span>{task.blockList.length} blocked</span>
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         );
